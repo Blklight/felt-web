@@ -1,6 +1,12 @@
 import { GeistPixelCircle, GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata } from "next";
-import { Barlow, Bungee_Shade, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Barlow,
+  Bungee_Shade,
+  Inter,
+  JetBrains_Mono,
+  Monoton,
+} from "next/font/google";
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,6 +31,12 @@ const bungeeShade = Bungee_Shade({
   variable: "--font-bungee-shade",
 });
 
+const monoton = Monoton({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-monoton",
+});
+
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -47,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         jetBrainsMono.variable,
         barlow.variable,
         bungeeShade.variable,
+        monoton.variable,
         GeistPixelSquare.variable,
         GeistPixelCircle.variable,
       )}

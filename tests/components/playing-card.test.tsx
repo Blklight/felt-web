@@ -1,5 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
+import { CardBack } from "@/components/cards/card-back";
 import { Hand } from "@/components/cards/hand";
 import { PlayingCard } from "@/components/cards/playing-card";
 import { useLanguageStore } from "@/store/useLanguageStore";
@@ -29,7 +30,25 @@ describe("PlayingCard", () => {
     expect(
       screen.getByRole("img", { name: "Face-down card" }),
     ).toBeInTheDocument();
-    expect(container.textContent).toBe("");
+    expect(container.querySelector("[data-suit-fill]")).toBeNull();
+  });
+
+  it("uses the ink back by default and the neon back on request", () => {
+    const { container, rerender } = render(<CardBack />);
+    expect(container.querySelector("[data-back='ink']")).not.toBeNull();
+    rerender(<CardBack variant="neon" />);
+    expect(container.querySelector("[data-back='neon']")).not.toBeNull();
+    expect(
+      screen.getByRole("img", { name: "Face-down card" }),
+    ).toBeInTheDocument();
+  });
+
+  it("wraps the back in both texture layers", () => {
+    render(<CardBack />);
+    const wrapper = screen.getByRole("img", {
+      name: "Face-down card",
+    }).parentElement;
+    expect(wrapper).toHaveClass("texture-item", "background-texture");
   });
 
   it("uses a different diamond fill in four-color mode", () => {
