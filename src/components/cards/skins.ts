@@ -21,9 +21,9 @@ const SUIT_FILL: Record<CardSkin, Record<Suit, string>> = {
 };
 
 const VICE_RED =
-  "linear-gradient(155deg, #ff7a45 0%, #e8336d 55%, #a3126b 100%)";
+  "linear-gradient(155deg, #ff8a2b 0%, #ff2e7e 50%, #6a2cff 100%)";
 const VICE_DARK =
-  "linear-gradient(155deg, #3b1a78 0%, #1a0b3d 55%, #07030f 100%)";
+  "linear-gradient(155deg, #0b7a9a 0%, #3b1a78 50%, #07030f 100%)";
 
 export const suitFill = (suit: Suit, skin: CardSkin) => SUIT_FILL[skin][suit];
 
@@ -32,7 +32,7 @@ export function faceStyle(skin: CardSkin, suit: Suit): CSSProperties {
   if (skin === "noir") return { backgroundColor: INK };
   if (skin === "vice") {
     return {
-      backgroundColor: red ? "#e8336d" : "#1a0b3d",
+      backgroundColor: red ? "#ff2e7e" : "#1a0b3d",
       backgroundImage: red ? VICE_RED : VICE_DARK,
     };
   }
