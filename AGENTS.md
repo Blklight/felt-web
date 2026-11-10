@@ -35,7 +35,7 @@ Sempre rode `bun run typecheck`, `bun run lint` e `bun run test` antes de finali
 - **API:** use `apiClient` (`src/lib/api-client.ts`) — ele injeta o Bearer do `useAuthStore` e trata refresh em `401`. Envelope de resposta `{ data, error, message }`.
 - **Data fetching:** TanStack Query via `getQueryClient()` (`src/lib/query-client.ts`); o `QueryProvider` já está no `layout.tsx`.
 - **Auth:** estado em `src/store/useAuthStore.ts` (Zustand persistido). Não leia o token direto em componentes.
-- **`cacheComponents: true`:** valores instáveis (`new Date()`, `Math.random()`) não podem rodar no pré-render de Client Components — envolva em `<Suspense>`. Leia `node_modules/next/dist/docs/` antes de mexer em APIs do Next.
+- **Export estático:** `output: "export"` (GitHub Pages). `cacheComponents`/`partialPrefetching` ficam desligados (incompatíveis com export). Sem rotas dinâmicas: a mesa usa `/table?code=`. Leia `node_modules/next/dist/docs/` antes de mexer em APIs do Next.
 - **Testes:** `tests/**/*.test.{ts,tsx}` (jsdom). `tests/setup.ts` já traz jest-dom, `cleanup` e polyfills de `matchMedia`/`PointerEvent`. Teste comportamento via papéis/`aria`.
 
 ## Não faça

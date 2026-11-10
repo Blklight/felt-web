@@ -36,7 +36,7 @@ Esta fatia entrega o visual e os componentes com dados falsos no formato do prot
 
 - Mantém o template `tpl-ui`: Next.js 16 (App Router), Tailwind v4, Base UI/shadcn (`base-vega`), Zustand, Vitest, Biome, Bun. Segue o `AGENTS.md`.
 - Hospedagem gratuita estática (GitHub Pages) em `felt.blklight.dev`: `output: "export"`. Sem rotas dinâmicas para códigos de sala: a mesa vive em `/table` e lê `?code=` no cliente. Os irmãos usam `trailingSlash: true` e `images.unoptimized`; seguimos o mesmo e o workflow `deploy.yml` do `cringedeck` como referência.
-- `cacheComponents: true` está ligado neste repo, e os irmãos exportam sem ele. A compatibilidade com `output: "export"` precisa ser confirmada na doc do Next 16 (`node_modules/next/dist/docs/`, hoje ausente: `bun install` primeiro). Se não for compatível, desligamos `cacheComponents` (decisão do builder, registrada aqui).
+- `cacheComponents: true` está ligado neste repo, e os irmãos exportam sem ele. A compatibilidade com `output: "export"` precisa ser confirmada na doc do Next 16 (`node_modules/next/dist/docs/`, hoje ausente: `bun install` primeiro). **Resultado (confirmado no build): incompatível** (`PPR cannot be enabled in export mode`). `cacheComponents` e `partialPrefetching` foram removidos de `next.config.ts`.
 - Sem dependências novas sem avisar. Sem comentários óbvios no código.
 
 ## Decisões visuais (aprovadas pelo dono)
