@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 
 type Props = { code: CardCode; fourColor?: boolean; className?: string };
 
+const INDEX_FONT = "var(--font-barlow), sans-serif";
+const VALUE_FONT = "var(--font-bungee-shade), sans-serif";
+
 export function PlayingCard({ code, fourColor = false, className }: Props) {
   const t = useT();
   const card = parseCard(code);
@@ -20,79 +23,62 @@ export function PlayingCard({ code, fourColor = false, className }: Props) {
     suit: t(`suit.${card.suit}`),
   });
   const rank = card.rank === "T" ? "10" : card.rank;
-  const isFace = card.rank === "J" || card.rank === "Q" || card.rank === "K";
+  const ten = rank === "10";
 
-  return (
-    <svg
-      role="img"
-      aria-label={label}
-      viewBox="0 0 64 90"
-      className={cn("aspect-[64/90] w-14 rounded-md shadow-md", className)}
-    >
-      <rect
-        width="64"
-        height="90"
-        rx="6"
-        fill="var(--color-bone)"
-        stroke="#00000022"
-      />
+  const corner = (rotated: boolean) => (
+    <g transform={rotated ? "rotate(180 50 70)" : undefined}>
       <text
-        x="6"
-        y="16"
-        fontSize="13"
+        x="9"
+        y="24"
+        fontFamily={INDEX_FONT}
         fontWeight="700"
-        fontFamily="Georgia, serif"
+        fontSize={ten ? 17 : 20}
         fill={fill}
       >
         {rank}
       </text>
-      <g transform="translate(6 19) scale(.3)" data-suit-fill={fill}>
-        <path d={SUIT_PATHS[card.suit]} fill={fill} />
-      </g>
-      {isFace ? (
-        <g>
-          <rect
-            x="14"
-            y="26"
-            width="36"
-            height="38"
-            rx="4"
-            fill="none"
-            stroke={fill}
-            strokeWidth="1.500"
-          />
-          <text
-            x="32"
-            y="53"
-            textAnchor="middle"
-            fontSize="26"
-            fontWeight="700"
-            fontFamily="Georgia, serif"
-            fill={fill}
-          >
-            {card.rank}
-          </text>
-        </g>
-      ) : (
-        <g transform="translate(20 33) scale(1)">
-          <path d={SUIT_PATHS[card.suit]} fill={fill} />
-        </g>
+      <svg
+        x="7"
+        y="27"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill={fill}
+        aria-hidden="true"
+        data-suit-fill={fill}
+      >
+        <path d={SUIT_PATHS[card.suit]} />
+      </svg>
+    </g>
+  );
+
+  return (
+    <div
+      className={cn(
+        "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg bg-bone shadow-md",
+        className,
       )}
-      <g transform="rotate(180 32 45)">
+    >
+      <svg
+        role="img"
+        aria-label={label}
+        viewBox="0 0 100 140"
+        className="block size-full"
+      >
+        {corner(false)}
+        {corner(true)}
         <text
-          x="6"
-          y="16"
-          fontSize="13"
-          fontWeight="700"
-          fontFamily="Georgia, serif"
+          x="48"
+          y={ten ? 84.3 : 90}
+          textAnchor="middle"
+          fontFamily={VALUE_FONT}
+          fontSize={ten ? 52 : 68}
+          letterSpacing={ten ? -4 : 0}
           fill={fill}
         >
           {rank}
         </text>
-        <g transform="translate(6 19) scale(.3)">
-          <path d={SUIT_PATHS[card.suit]} fill={fill} />
-        </g>
-      </g>
-    </svg>
+      </svg>
+    </div>
   );
 }

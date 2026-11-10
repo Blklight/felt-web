@@ -45,6 +45,26 @@ describe("PlayingCard", () => {
     expect(four).not.toBe(plain);
   });
 
+  it("wraps a face-up card in both texture layers", () => {
+    render(<PlayingCard code="As" />);
+    const wrapper = screen.getByRole("img", {
+      name: "Ace of spades",
+    }).parentElement;
+    expect(wrapper).toHaveClass("texture-item", "background-texture");
+  });
+
+  it("writes ten as 10 in the corner and in the center", () => {
+    render(<PlayingCard code="Td" />);
+    const svg = screen.getByRole("img", { name: "Ten of diamonds" });
+    expect(svg.textContent).toBe("101010");
+  });
+
+  it("draws no suit symbol in the center", () => {
+    render(<PlayingCard code="As" />);
+    const svg = screen.getByRole("img", { name: "Ace of spades" });
+    expect(svg.querySelectorAll("svg")).toHaveLength(2);
+  });
+
   it("Hand renders one image per card", () => {
     render(<Hand cards={["As", "Kd", "??"]} />);
     expect(screen.getAllByRole("img")).toHaveLength(3);

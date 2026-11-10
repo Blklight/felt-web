@@ -12,7 +12,7 @@ export function Hand({ cards, fourColor }: Props) {
           key={key}
           code={code}
           fourColor={fourColor}
-          className="w-9 sm:w-14"
+          className="w-11 sm:w-16"
         />
       ))}
     </div>

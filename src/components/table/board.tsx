@@ -16,14 +16,14 @@ export function Board({ cards, slots = 5, fourColor }: Props) {
           key={key}
           code={code}
           fourColor={fourColor}
-          className="w-8 sm:w-14"
+          className="w-10 sm:w-16"
         />
       ))}
       {empty.map((slot) => (
         <div
           key={slot}
           aria-hidden="true"
-          className="aspect-[64/90] w-8 rounded-md sm:w-14 border border-bone/20 border-dashed"
+          className="aspect-[5/7] w-8 rounded-md sm:w-14 border border-bone/20 border-dashed"
         />
       ))}
     </div>
