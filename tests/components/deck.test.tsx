@@ -51,6 +51,26 @@ describe("Hand dealing from a point", () => {
   });
 });
 
+describe("cards are visible from the first frame", () => {
+  it("never starts a dealt card at zero opacity", () => {
+    const { container } = render(
+      <Hand cards={["As", "??"]} from={{ x: 80, y: -30 }} dealDelay={0.5} />,
+    );
+    const cards = container.querySelectorAll("[data-skin], [data-back]");
+    expect(cards).toHaveLength(2);
+    for (const card of cards) {
+      expect((card as HTMLElement).style.opacity).not.toBe("0");
+    }
+  });
+
+  it("also keeps a card without an origin visible", () => {
+    const { container } = render(<Hand cards={["As", "??"]} />);
+    for (const card of container.querySelectorAll("[data-skin], [data-back]")) {
+      expect((card as HTMLElement).style.opacity).not.toBe("0");
+    }
+  });
+});
+
 describe("ChipFlight", () => {
   beforeEach(() => {
     act(() => useLanguageStore.setState({ language: "en" }));
