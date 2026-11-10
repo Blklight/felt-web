@@ -1,43 +1,56 @@
-import type { Point } from "@/components/cards/card-motion";
-import { PlayingCard } from "@/components/cards/playing-card";
-import type { CardSkin } from "@/components/cards/skins";
-import { useDealt } from "@/components/cards/use-dealt";
+import type { RefObject } from "react";
+import type { CardBackVariant, CardSkin } from "@/components/cards/skins";
+import { TableCard } from "@/components/cards/table-card";
 import type { CardCode } from "@/dev/view-types";
-import { keyedCards } from "@/lib/cards";
 
 type Props = {
   cards: CardCode[];
   slots?: number;
   skin?: CardSkin;
-  from?: Point;
-  dealDelay?: number;
+  back?: CardBackVariant;
+  faceDown?: boolean;
+  dealFrom?: RefObject<HTMLElement | null>;
+  dealDelays?: number[];
 };
 
-export function Board({ cards, slots = 5, skin, from, dealDelay = 0 }: Props) {
-  const dealt = useDealt(cards, from, dealDelay, 0.15);
-  const empty = Array.from(
-    { length: Math.max(0, slots - cards.length) },
-    (_, n) => cards.length + n,
+const CARD = "w-10 sm:w-16";
+
+export function Board({
+  cards,
+  slots = 5,
+  skin,
+  back,
+  faceDown = false,
+  dealFrom,
+  dealDelays,
+}: Props) {
+  const spots = Array.from(
+    { length: slots },
+    (_, k): CardCode | null => cards[k] ?? (faceDown ? "??" : null),
   );
   return (
     <div className="flex gap-1.5">
-      {keyedCards(dealt.cards).map(({ code, key }, i) => (
-        <PlayingCard
-          key={key}
-          code={code}
-          skin={skin}
-          delay={dealDelay + i * 0.15}
-          from={dealt.from}
-          className="w-10 sm:w-16"
-        />
-      ))}
-      {empty.map((slot) => (
-        <div
-          key={slot}
-          aria-hidden="true"
-          className="aspect-[5/7] w-8 rounded-md sm:w-14 border border-bone/20 border-dashed"
-        />
-      ))}
+      {spots.map((code, k) =>
+        code === null ? (
+          <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed board spots
+            key={k}
+            aria-hidden="true"
+            className={`aspect-[5/7] rounded-md border border-bone/20 border-dashed ${CARD}`}
+          />
+        ) : (
+          <TableCard
+            // biome-ignore lint/suspicious/noArrayIndexKey: a spot keeps its card so the flop, turn and river turn over in place
+            key={k}
+            code={code}
+            skin={skin}
+            back={back}
+            dealFrom={dealFrom}
+            dealDelay={dealDelays?.[k] ?? 0}
+            className={CARD}
+          />
+        ),
+      )}
     </div>
   );
 }

@@ -5,10 +5,10 @@ import { Deck } from "@/components/cards/deck";
 import { Hand } from "@/components/cards/hand";
 import { ChipFlight } from "@/components/chips/chip-flight";
 import { ChipStack } from "@/components/chips/chip-stack";
+import { ScriptedTable } from "@/components/screens/scripted-table";
 import { ActionBar } from "@/components/table/action-bar";
 import { Pot } from "@/components/table/pot";
 import { Seat } from "@/components/table/seat";
-import { Table } from "@/components/table/table";
 import { Timer } from "@/components/table/timer";
 import { Button } from "@/components/ui/button";
 import { pokerTable } from "@/dev/fixtures";
@@ -71,12 +71,12 @@ function DealStage() {
   return (
     <Stage
       wide
-      title="Deal from the deck"
-      hint="Cards leave the deck face down, one per player at a time; then the board. Cards with a value turn when they land."
+      title="A whole hand"
+      hint="Hole cards leave the deck face down, one per player from the dealer's left; the board is dealt face down; bets go to the pot; flop, turn and river turn over after each betting round; showdown; the pot goes to the winner."
       actions={replayButton(() => setRun((n) => n + 1))}
     >
       <div className="w-full">
-        <Table key={run} view={pokerTable(4)} animateDeal />
+        <ScriptedTable key={run} />
       </div>
     </Stage>
   );
