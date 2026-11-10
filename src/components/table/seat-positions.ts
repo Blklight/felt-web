@@ -46,6 +46,13 @@ export function seatPositions(shape: TableShape, count: number): Point[] {
   });
 }
 
-export function deckPosition(shape: TableShape): Point {
-  return shape === "halfmoon" ? { x: 76, y: 14 } : { x: 50, y: 22 };
+// Between the two top seats when their count is even (a seat sits at the top), straight up when odd.
+export function deckPosition(shape: TableShape, count: number): Point {
+  if (shape === "halfmoon") return { x: 76, y: 14 };
+  const degrees = 270 + (count % 2 === 0 ? 180 / count : 0);
+  const angle = (degrees * Math.PI) / 180;
+  return {
+    x: round2(50 + 34 * Math.cos(angle)),
+    y: round2(50 + 30 * Math.sin(angle)),
+  };
 }

@@ -74,14 +74,30 @@ describe("Hand and Board keep their slots", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows face-down cards for the board cards not revealed yet", () => {
-    render(<Board cards={["7h", "Td", "2c"]} faceDown />);
-    expect(
-      screen.getByRole("img", { name: "Seven of hearts" }),
-    ).toBeInTheDocument();
+  it("deals only the flop face down and leaves the turn and river spots empty", () => {
+    render(<Board cards={[]} faceDown />);
     expect(screen.getAllByRole("img", { name: "Face-down card" })).toHaveLength(
-      2,
+      3,
     );
+  });
+
+  it("brings the turn into the empty fourth spot", () => {
+    const { container, rerender } = render(
+      <Board cards={["7h", "Td", "2c"]} faceDown />,
+    );
+    expect(
+      container.querySelectorAll("div[class*='perspective']"),
+    ).toHaveLength(3);
+    rerender(<Board cards={["7h", "Td", "2c", "Qs"]} faceDown />);
+    expect(
+      container.querySelectorAll("div[class*='perspective']"),
+    ).toHaveLength(4);
+    expect(
+      screen.getByRole("img", { name: "Queen of spades" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryAllByRole("img", { name: "Face-down card" }),
+    ).toHaveLength(0);
   });
 
   it("shows empty spots when the board is not dealt face down", () => {
@@ -103,7 +119,7 @@ describe("dealSchedule", () => {
     expect(seats[first][1]).toBeCloseTo(0.4);
     const lastHole = Math.max(...seats.flat());
     expect(Math.min(...board)).toBeGreaterThan(lastHole);
-    expect(board).toHaveLength(5);
+    expect(board).toHaveLength(3);
   });
 
   it("skips empty seats and gives the blackjack dealer a card after each round", () => {

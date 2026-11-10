@@ -115,7 +115,7 @@ export function Table({ view, animateDeal = false }: Props) {
   const t = useT();
   const look = useCardLook(view.boardSkinId, view.boardBackId);
   const { shape, slotOf, betOf } = layout(view);
-  const deck = deckPosition(shape);
+  const deck = deckPosition(shape, view.seats.length);
   const deckRef = useRef<HTMLDivElement>(null);
   const dealFrom = animateDeal ? deckRef : undefined;
   const [schedule] = useState(() => dealSchedule(view, DEAL_STEP));
