@@ -106,6 +106,7 @@ function ActionBarDemo() {
     <div className="flex flex-col gap-3">
       <ActionBar
         actions={pokerTable(2).you.legalActions}
+        pot={300}
         onAction={(a) => setLast(JSON.stringify(a))}
       />
       <code className="text-muted-foreground text-xs">{last}</code>
