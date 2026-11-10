@@ -39,6 +39,33 @@ const en = {
   "nav.profile": "Profile",
   "nav.about": "About",
   "about.noRealMoney": "felt uses fake credits only. No real money, no prizes.",
+  "game.blackjack": "Blackjack",
+  "game.poker": "Poker",
+  "lobby.title": "Play cards with friends",
+  "lobby.create": "Create a room",
+  "lobby.game": "Game",
+  "lobby.blinds": "Blinds",
+  "lobby.capStacks": "Cap bets to the shortest stack",
+  "lobby.createButton": "Create room",
+  "lobby.join": "Join with a code",
+  "lobby.code": "Room code",
+  "lobby.joinButton": "Join",
+  "lobby.invalidCode": "Use 5 letters or digits (no 0, O, 1 or I).",
+  "lobby.quick": "Quick game vs bots",
+  "table.noCode": "No room code. Join or create a room from the lobby.",
+  "table.room": "Room {code}",
+  "table.back": "Back to lobby",
+  "profile.title": "Profile",
+  "profile.name": "Name",
+  "profile.balance": "Balance",
+  "profile.recovery": "Recovery code",
+  "profile.recoveryHint":
+    "Save this code to get your account back on another device.",
+  "profile.delete": "Delete account",
+  "about.title": "About felt",
+  "about.how": "How to play",
+  "about.howText":
+    "Create a room, share its code with your friends and take a seat. Pick blackjack or poker; the server deals and checks every move.",
 } as const;
 
 export type MessageKey = keyof typeof en;
@@ -86,6 +113,33 @@ const ptBr: Record<MessageKey, string> = {
   "nav.about": "Sobre",
   "about.noRealMoney":
     "O felt usa apenas créditos fictícios. Sem dinheiro real, sem prêmios.",
+  "game.blackjack": "Blackjack",
+  "game.poker": "Poker",
+  "lobby.title": "Jogue cartas com os amigos",
+  "lobby.create": "Criar uma sala",
+  "lobby.game": "Jogo",
+  "lobby.blinds": "Blinds",
+  "lobby.capStacks": "Limitar apostas ao menor stack",
+  "lobby.createButton": "Criar sala",
+  "lobby.join": "Entrar com um código",
+  "lobby.code": "Código da sala",
+  "lobby.joinButton": "Entrar",
+  "lobby.invalidCode": "Use 5 letras ou números (sem 0, O, 1 ou I).",
+  "lobby.quick": "Jogo rápido contra bots",
+  "table.noCode": "Sem código de sala. Entre ou crie uma sala no lobby.",
+  "table.room": "Sala {code}",
+  "table.back": "Voltar ao lobby",
+  "profile.title": "Perfil",
+  "profile.name": "Nome",
+  "profile.balance": "Saldo",
+  "profile.recovery": "Código de recuperação",
+  "profile.recoveryHint":
+    "Guarde este código para recuperar sua conta em outro dispositivo.",
+  "profile.delete": "Apagar conta",
+  "about.title": "Sobre o felt",
+  "about.how": "Como jogar",
+  "about.howText":
+    "Crie uma sala, compartilhe o código com os amigos e sente-se à mesa. Escolha blackjack ou poker; o servidor distribui as cartas e confere cada jogada.",
 };
 
 export const dictionaries: Record<Language, Record<MessageKey, string>> = {
