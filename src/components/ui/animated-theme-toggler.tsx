@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -21,7 +22,7 @@ type Theme = "light" | "dark" | "book" | "system";
 
 export const AnimatedThemeToggler = ({ className, children }: Props) => {
   const { setTheme } = useTheme();
-  const t = (key: string) => key;
+  const t = useT();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleChangeTheme = async (theme: Theme) => {
@@ -67,8 +68,8 @@ export const AnimatedThemeToggler = ({ className, children }: Props) => {
       <DropdownMenuTrigger
         ref={buttonRef}
         type="button"
-        aria-label={t("toggleTheme")}
-        title={t("toggleTheme")}
+        aria-label={t("theme.toggle")}
+        title={t("theme.toggle")}
         className={cn(
           "flex h-10 w-12 cursor-pointer items-center justify-center gap-1 rounded-xs px-4 text-[#252525] outline-none hover:bg-[#252525] hover:text-[#eaeaea] dark:text-[#eaeaea] dark:hover:bg-[#eaeaea] dark:hover:text-[#252525]",
           className,
@@ -97,7 +98,7 @@ export const AnimatedThemeToggler = ({ className, children }: Props) => {
             <path d="M12 19.6l8.85 -8.85" />
           </svg>
         )}
-        <span className="sr-only">{t("toggleTheme")}</span>
+        <span className="sr-only">{t("theme.toggle")}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -108,28 +109,28 @@ export const AnimatedThemeToggler = ({ className, children }: Props) => {
           onClick={() => handleChangeTheme("light")}
         >
           <Sun className="mr-1 h-4 w-4" />
-          {t("light")}
+          {t("theme.light")}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer rounded-xs"
           onClick={() => handleChangeTheme("dark")}
         >
           <Moon className="mr-1 h-4 w-4" />
-          {t("dark")}
+          {t("theme.dark")}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer rounded-xs"
           onClick={() => handleChangeTheme("book")}
         >
           <BookOpen className="mr-1 h-4 w-4" />
-          {t("book")}
+          {t("theme.book")}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer rounded-xs"
           onClick={() => handleChangeTheme("system")}
         >
           <Laptop className="mr-1 h-4 w-4" />
-          {t("system")}
+          {t("theme.system")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
