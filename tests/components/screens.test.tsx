@@ -35,6 +35,17 @@ describe("Lobby", () => {
     act(() => useLanguageStore.setState({ language: "en" }));
   });
 
+  it("presents the hero with the tagline and an empty recent-tables panel", () => {
+    render(<Lobby />);
+    expect(
+      screen.getByText("Cards with friends. Fake credits only."),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(3);
+    expect(
+      screen.getByText("Tables you play will show up here."),
+    ).toBeInTheDocument();
+  });
+
   it("shows an error and does not navigate for an invalid code", async () => {
     render(<Lobby />);
     await userEvent.type(screen.getByLabelText("Room code"), "AB0O1");
