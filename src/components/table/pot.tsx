@@ -8,7 +8,7 @@ export function Pot({ pots }: { pots: number[] }) {
   const format = useFormatNumber();
   const total = pots.reduce((a, b) => a + b, 0);
   return (
-    <div className="flex flex-col items-center font-mono">
+    <div className="flex flex-col items-center tabular-nums">
       <span className="text-[10px] text-bone/70 uppercase tracking-widest">
         {t("pot")}
       </span>

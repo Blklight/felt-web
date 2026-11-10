@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { CardBack } from "@/components/cards/card-back";
 import { Hand } from "@/components/cards/hand";
 import { PlayingCard } from "@/components/cards/playing-card";
+import { useCardSkinStore } from "@/store/useCardSkinStore";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
 describe("PlayingCard", () => {
@@ -51,17 +52,53 @@ describe("PlayingCard", () => {
     expect(wrapper).toHaveClass("texture-item", "background-texture");
   });
 
-  it("uses a different diamond fill in four-color mode", () => {
-    const a = render(<PlayingCard code="Td" />);
-    const plain = a.container
-      .querySelector("[data-suit-fill]")
-      ?.getAttribute("data-suit-fill");
-    a.unmount();
-    const b = render(<PlayingCard code="Td" fourColor />);
-    const four = b.container
-      .querySelector("[data-suit-fill]")
-      ?.getAttribute("data-suit-fill");
-    expect(four).not.toBe(plain);
+  describe("skins", () => {
+    const fill = (
+      code: "As" | "Th" | "Td" | "Tc",
+      skin?: "classic" | "four-color" | "fantasy" | "noir",
+    ) => {
+      const { container, unmount } = render(
+        <PlayingCard code={code} skin={skin} />,
+      );
+      const value = container
+        .querySelector("[data-suit-fill]")
+        ?.getAttribute("data-suit-fill");
+      unmount();
+      return value;
+    };
+
+    it("classic: red hearts and diamonds, ink spades and clubs", () => {
+      expect(fill("Th", "classic")).toBe("var(--color-suit-red)");
+      expect(fill("Td", "classic")).toBe("var(--color-suit-red)");
+      expect(fill("As", "classic")).toBe("var(--color-card-ink)");
+      expect(fill("Tc", "classic")).toBe("var(--color-card-ink)");
+    });
+
+    it("four-color: diamonds are blue and clubs green", () => {
+      expect(fill("Td", "four-color")).toBe("#1d4ed8");
+      expect(fill("Tc", "four-color")).toBe("#15803d");
+    });
+
+    it("fantasy: hearts red, diamonds orange, clubs black, spades blue", () => {
+      expect(fill("Th", "fantasy")).toBe("var(--color-suit-red)");
+      expect(fill("Td", "fantasy")).toBe("#c2570a");
+      expect(fill("Tc", "fantasy")).toBe("var(--color-card-ink)");
+      expect(fill("As", "fantasy")).toBe("#1d4ed8");
+    });
+
+    it("noir: dark face with light spades and clubs", () => {
+      const { container } = render(<PlayingCard code="As" skin="noir" />);
+      expect(container.firstElementChild).toHaveAttribute("data-skin", "noir");
+      expect(fill("As", "noir")).toBe("var(--color-bone)");
+      expect(fill("Tc", "noir")).toBe("var(--color-bone)");
+    });
+
+    it("follows the stored skin when none is given", () => {
+      act(() => useCardSkinStore.setState({ skin: "fantasy" }));
+      expect(fill("Td")).toBe("#c2570a");
+      act(() => useCardSkinStore.setState({ skin: "classic" }));
+      expect(fill("Td")).toBe("var(--color-suit-red)");
+    });
   });
 
   it("wraps a face-up card in both texture layers", () => {

@@ -10,7 +10,7 @@ export function SiteHeader() {
   const t = useT();
   return (
     <header className="flex items-center justify-between gap-4 border-border border-b px-4 py-2">
-      <Link href="/" className="font-pixel text-lg tracking-tight">
+      <Link href="/" className="font-bungee text-xl">
         felt
       </Link>
       <nav className="flex items-center gap-4 text-sm">

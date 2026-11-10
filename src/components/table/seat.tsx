@@ -6,9 +6,9 @@ import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
-type Props = { seat: SeatView; isYou?: boolean; fourColor?: boolean };
+type Props = { seat: SeatView; isYou?: boolean };
 
-export function Seat({ seat, isYou = false, fourColor }: Props) {
+export function Seat({ seat, isYou = false }: Props) {
   const t = useT();
   const format = useFormatNumber();
 
@@ -34,7 +34,6 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
     >
       <Hand
         cards={seat.cards}
-        fourColor={fourColor}
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />
@@ -51,7 +50,7 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
         >
           {seat.name}
         </p>
-        <p className="font-mono text-[11px] text-bone/80 leading-tight">
+        <p className="tabular-nums text-[11px] text-bone/80 leading-tight">
           {format(seat.stack)}
         </p>
       </div>

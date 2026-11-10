@@ -14,7 +14,7 @@ export function LobbyHero() {
         <PlayingCard code="Kd" className="-mx-2 z-10" />
         <PlayingCard code="??" className="translate-y-1 rotate-12" />
       </div>
-      <h1 className="font-pixel text-4xl tracking-wide">felt</h1>
+      <h1 className="font-bungee text-5xl">felt</h1>
       <p className="text-muted-foreground">{t("lobby.tagline")}</p>
       <div className="flex flex-wrap justify-center gap-2">
         <a
