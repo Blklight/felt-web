@@ -1,11 +1,14 @@
 "use client";
 
+import useMeasure from "react-use-measure";
+import { Deck } from "@/components/cards/deck";
 import { Hand } from "@/components/cards/hand";
 import { ChipStack } from "@/components/chips/chip-stack";
 import { Board } from "@/components/table/board";
 import { Pot } from "@/components/table/pot";
 import { Seat } from "@/components/table/seat";
 import {
+  deckPosition,
   type Point,
   seatPositions,
   type TableShape,
@@ -35,6 +38,9 @@ function toward(from: Point, to: Point, amount: number): Point {
 
 export function Table({ view }: Props) {
   const t = useT();
+  const [boxRef, bounds] = useMeasure();
+  const width = bounds.width || 640;
+  const height = bounds.height || 360;
   const look = useCardLook(view.boardSkinId, view.boardBackId);
   const count = view.seats.length;
   const shape = tableShape(view.game, count);
@@ -45,16 +51,28 @@ export function Table({ view }: Props) {
     slots[(i - Math.max(viewer, 0) + anchor + count) % count];
   const focus: Point =
     shape === "halfmoon" ? { x: 50, y: 40 } : { x: 50, y: 50 };
+  const deck = deckPosition(shape);
+  const offsetFromDeck = (at: Point): Point => ({
+    x: ((deck.x - at.x) / 100) * width,
+    y: ((deck.y - at.y) / 100) * height,
+  });
 
   return (
     <div className="mx-auto w-full px-10 py-14 sm:px-8 sm:py-12">
       <div
+        ref={boxRef}
         data-shape={shape}
         className={cn("table relative mx-auto w-full", BOX[shape])}
       >
         <div className="table-rim" />
         <div className="table-felt felt-surface" />
         <div className="table-line" />
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${deck.x}%`, top: `${deck.y}%` }}
+        >
+          <Deck />
+        </div>
         <div
           className={cn(
             "absolute inset-0 flex flex-col items-center gap-3",
@@ -64,10 +82,21 @@ export function Table({ view }: Props) {
           {view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
-              <Board cards={view.board} skin={look.skin} />
+              <Board
+                cards={view.board}
+                skin={look.skin}
+                from={offsetFromDeck(focus)}
+                dealDelay={0.8}
+              />
             </>
           ) : (
-            <Hand cards={view.board} skin={look.skin} back={look.back} />
+            <Hand
+              cards={view.board}
+              skin={look.skin}
+              back={look.back}
+              from={offsetFromDeck({ x: 50, y: 18 })}
+              dealDelay={0.3}
+            />
           )}
           <Timer secondsLeft={view.secondsLeft} />
         </div>
@@ -94,7 +123,12 @@ export function Table({ view }: Props) {
               className="absolute -translate-x-1/2 -translate-y-1/2"
               style={{ left: `${at.x}%`, top: `${at.y}%` }}
             >
-              <Seat seat={seat} isYou={view.you.seat === seat.seat} />
+              <Seat
+                seat={seat}
+                isYou={view.you.seat === seat.seat}
+                from={offsetFromDeck(at)}
+                dealDelay={i * 0.12}
+              />
             </div>
           );
         })}

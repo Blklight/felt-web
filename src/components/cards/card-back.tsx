@@ -2,14 +2,25 @@
 
 import { motion } from "motion/react";
 import { useId } from "react";
-import { DEAL_IN, withDelay } from "@/components/cards/card-motion";
+import {
+  DEAL_IN,
+  fromPoint,
+  type Point,
+  withDelay,
+} from "@/components/cards/card-motion";
 import type { CardBackVariant } from "@/components/cards/skins";
 import { SUIT_PATHS } from "@/components/cards/suits";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardSkinStore } from "@/store/useCardSkinStore";
 
-type Props = { variant?: CardBackVariant; className?: string; delay?: number };
+type Props = {
+  variant?: CardBackVariant;
+  className?: string;
+  delay?: number;
+  from?: Point;
+  decorative?: boolean;
+};
 
 const VALUE_FONT = "var(--font-bungee-shade), sans-serif";
 const NEON_FONT = "var(--font-monoton), sans-serif";
@@ -227,7 +238,13 @@ const WRAPPER: Record<CardBackVariant, string> = {
 const VICE_BACKGROUND =
   "linear-gradient(180deg, #2a0f5c 0%, #7a1f7e 45%, #ff4d8d 80%, #ff9a4d 100%)";
 
-export function CardBack({ variant, className, delay = 0 }: Props) {
+export function CardBack({
+  variant,
+  className,
+  delay = 0,
+  from,
+  decorative = false,
+}: Props) {
   const t = useT();
   const storedBack = useCardSkinStore((state) => state.back);
   const active = variant ?? storedBack;
@@ -235,7 +252,7 @@ export function CardBack({ variant, className, delay = 0 }: Props) {
   return (
     <motion.div
       data-back={active}
-      {...withDelay(DEAL_IN, delay)}
+      {...fromPoint(withDelay(DEAL_IN, delay), from)}
       style={
         active === "vice" ? { backgroundImage: VICE_BACKGROUND } : undefined
       }
@@ -245,9 +262,11 @@ export function CardBack({ variant, className, delay = 0 }: Props) {
         className,
       )}
     >
+      {/* biome-ignore lint/a11y/noSvgWithoutTitle: labeled unless decorative, where it is aria-hidden */}
       <svg
-        role="img"
-        aria-label={t("card.hidden")}
+        {...(decorative
+          ? { "aria-hidden": true }
+          : { role: "img", "aria-label": t("card.hidden") })}
         viewBox="0 0 100 140"
         className="block size-full"
       >

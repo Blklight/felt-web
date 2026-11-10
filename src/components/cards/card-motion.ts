@@ -17,3 +17,27 @@ export const withDelay = <T extends { transition: object }>(
   ...motion,
   transition: { ...motion.transition, delay },
 });
+
+export type Point = { x: number; y: number };
+
+type Motion = {
+  initial: object;
+  animate: object;
+  transition: object;
+};
+
+export const fromPoint = <T extends Motion>(motion: T, from?: Point): T =>
+  from
+    ? {
+        ...motion,
+        initial: {
+          ...motion.initial,
+          x: from.x,
+          y: from.y,
+          rotate: -18,
+          scale: 0.7,
+        },
+        animate: { ...motion.animate, x: 0, rotate: 0, scale: 1 },
+        transition: { ...motion.transition, duration: 0.5 },
+      }
+    : motion;

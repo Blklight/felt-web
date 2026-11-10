@@ -55,6 +55,14 @@ describe("Table", () => {
     expect(slot?.style.left).toBe("50%");
   });
 
+  it.each([
+    pokerTable(4),
+    blackjackTable,
+  ])("has a deck on the table", (view) => {
+    render(<Table view={view} />);
+    expect(screen.getByRole("img", { name: "Deck" })).toBeInTheDocument();
+  });
+
   it("shows each player's bet on the felt", () => {
     render(<Table view={pokerTable(3)} />);
     expect(screen.getByLabelText("Mara's stake")).toHaveTextContent("50");

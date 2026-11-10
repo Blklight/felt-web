@@ -2,7 +2,12 @@
 
 import { motion } from "motion/react";
 import { CardBack } from "@/components/cards/card-back";
-import { FLIP_IN, withDelay } from "@/components/cards/card-motion";
+import {
+  FLIP_IN,
+  fromPoint,
+  type Point,
+  withDelay,
+} from "@/components/cards/card-motion";
 import {
   type CardBackVariant,
   type CardSkin,
@@ -23,17 +28,32 @@ type Props = {
   back?: CardBackVariant;
   className?: string;
   delay?: number;
+  from?: Point;
 };
 
 const INDEX_FONT = "var(--font-barlow), sans-serif";
 
-export function PlayingCard({ code, skin, back, className, delay = 0 }: Props) {
+export function PlayingCard({
+  code,
+  skin,
+  back,
+  className,
+  delay = 0,
+  from,
+}: Props) {
   const t = useT();
   const storedSkin = useCardSkinStore((state) => state.skin);
   const activeSkin = skin ?? storedSkin;
   const card = parseCard(code);
   if (card.hidden)
-    return <CardBack variant={back} className={className} delay={delay} />;
+    return (
+      <CardBack
+        variant={back}
+        className={className}
+        delay={delay}
+        from={from}
+      />
+    );
 
   const fill = suitFill(card.suit, activeSkin);
   const label = t("card.label", {
@@ -74,7 +94,7 @@ export function PlayingCard({ code, skin, back, className, delay = 0 }: Props) {
   return (
     <motion.div
       data-skin={activeSkin}
-      {...withDelay(FLIP_IN, delay)}
+      {...fromPoint(withDelay(FLIP_IN, delay), from)}
       style={{ ...faceStyle(activeSkin, card.suit), transformPerspective: 700 }}
       className={cn(
         "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg shadow-md",

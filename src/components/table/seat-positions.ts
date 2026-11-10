@@ -45,3 +45,7 @@ export function seatPositions(shape: TableShape, count: number): Point[] {
     };
   });
 }
+
+export function deckPosition(shape: TableShape): Point {
+  return shape === "halfmoon" ? { x: 76, y: 14 } : { x: 50, y: 22 };
+}
