@@ -35,6 +35,7 @@ export const fromPoint = <T extends Motion>(motion: T, from?: Point): T =>
           x: from.x,
           y: from.y,
           rotate: -18,
+          rotateY: 0,
           scale: 0.7,
         },
         animate: { ...motion.animate, x: 0, rotate: 0, scale: 1 },
