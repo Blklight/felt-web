@@ -8,7 +8,12 @@ export function Hand({ cards, fourColor }: Props) {
     <div className="flex -space-x-5">
       {cards.map((code, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: cards may repeat as hidden ("??") and have no stable id
-        <PlayingCard key={i} code={code} fourColor={fourColor} />
+        <PlayingCard
+          key={i}
+          code={code}
+          fourColor={fourColor}
+          className="w-9 sm:w-14"
+        />
       ))}
     </div>
   );

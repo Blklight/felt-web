@@ -1,6 +1,6 @@
 export type Point = { x: number; y: number };
 
-const RX = 40;
+const RX = 38;
 const RY = 38;
 
 export function seatPositions(count: number): Point[] {

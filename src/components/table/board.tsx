@@ -9,14 +9,19 @@ export function Board({ cards, slots = 5, fourColor }: Props) {
     <div className="flex gap-1.5">
       {cards.map((code, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: positional board slots
-        <PlayingCard key={i} code={code} fourColor={fourColor} />
+        <PlayingCard
+          key={i}
+          code={code}
+          fourColor={fourColor}
+          className="w-8 sm:w-14"
+        />
       ))}
       {Array.from({ length: empty }, (_, i) => (
         <div
           // biome-ignore lint/suspicious/noArrayIndexKey: static placeholders
           key={i}
           aria-hidden="true"
-          className="aspect-[64/90] w-14 rounded-md border border-bone/20 border-dashed"
+          className="aspect-[64/90] w-8 rounded-md sm:w-14 border border-bone/20 border-dashed"
         />
       ))}
     </div>

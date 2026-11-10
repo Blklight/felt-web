@@ -13,7 +13,7 @@ type Props = { view: TableView; fourColor?: boolean };
 export function Table({ view, fourColor }: Props) {
   const positions = seatPositions(view.seats.length);
   return (
-    <div className="felt-surface relative mx-auto aspect-[4/5] w-full max-w-4xl overflow-hidden rounded-[50%/40%] border-4 border-felt-rim shadow-inner sm:aspect-[3/2]">
+    <div className="felt-surface relative mx-auto aspect-[4/5] w-full max-w-4xl rounded-[50%/40%] border-4 border-felt-rim shadow-inner sm:aspect-[3/2]">
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
         {view.game === "poker" ? (
           <>

@@ -19,9 +19,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/profile">{t("nav.profile")}</Link>
           <Link href="/about">{t("nav.about")}</Link>
           <LanguageSwitch />
-          <AnimatedThemeToggler className="inline-flex size-8 items-center justify-center rounded-md border border-bone/30 [&_svg]:size-4">
-            <SunIcon />
-            <MoonIcon />
+          <AnimatedThemeToggler className="size-8 border border-bone/30 px-0 text-bone hover:bg-bone/20 hover:text-bone dark:text-bone dark:hover:bg-bone/20 dark:hover:text-bone [&_svg]:size-4">
+            <SunIcon className="dark:hidden" />
+            <MoonIcon className="hidden dark:block" />
           </AnimatedThemeToggler>
         </nav>
       </header>

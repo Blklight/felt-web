@@ -30,7 +30,7 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
       aria-label={seat.name}
       aria-current={seat.isTurn ? "true" : undefined}
       className={cn(
-        "flex w-28 flex-col items-center gap-1 rounded-xl bg-black/40 p-2 text-bone",
+        "flex w-20 flex-col sm:w-28 items-center gap-1 rounded-xl bg-black/40 p-2 text-bone",
         seat.isTurn && "neon-glow neon-pulse",
         seat.status === "folded" && "opacity-50",
         isYou && "ring-1 ring-bone/40",
@@ -38,7 +38,7 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
     >
       <Hand cards={seat.cards} fourColor={fourColor} />
       <div className="flex w-full items-center gap-1.5">
-        <Avatar size="sm">
+        <Avatar size="sm" className="hidden sm:flex">
           <AvatarFallback>{seat.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
