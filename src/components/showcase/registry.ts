@@ -6,9 +6,12 @@ import { gameCategory } from "@/components/showcase/demos/game";
 import { menusCategory } from "@/components/showcase/demos/menus";
 import { overlaysCategory } from "@/components/showcase/demos/overlays";
 import { primitivesCategory } from "@/components/showcase/demos/primitives";
+import { filterCategories } from "@/components/showcase/filter";
+import { SHOWCASE_ONLY_USED } from "@/components/showcase/showcase.config";
 import type { ShowcaseCategory } from "@/components/showcase/types";
+import generated from "@/components/showcase/used.generated.json";
 
-export const categories: ShowcaseCategory[] = [
+const allCategories: ShowcaseCategory[] = [
   gameCategory,
   primitivesCategory,
   formsCategory,
@@ -18,3 +21,8 @@ export const categories: ShowcaseCategory[] = [
   customCategory,
   chamferCategory,
 ];
+
+export const categories = filterCategories(allCategories, {
+  onlyUsed: SHOWCASE_ONLY_USED,
+  ...generated,
+});

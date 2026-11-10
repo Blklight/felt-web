@@ -5,7 +5,9 @@ import { categories } from "@/components/showcase/registry";
 
 describe("game showcase", () => {
   it("is registered", () => {
-    expect(categories).toContain(gameCategory);
+    expect(categories.find((c) => c.id === gameCategory.id)?.items).toEqual(
+      gameCategory.items,
+    );
   });
 
   it("uses unique slugs across all categories", () => {
