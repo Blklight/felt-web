@@ -28,7 +28,7 @@ export function TableScreen({ code }: { code: string | null }) {
       <h1 className="tabular-nums text-muted-foreground text-sm">
         {t("table.room", { code })}
       </h1>
-      <Table view={view} />
+      <Table view={view} animateDeal />
       <ActionBar
         actions={view.you.legalActions}
         pot={view.pots.reduce((a, b) => a + b, 0)}
