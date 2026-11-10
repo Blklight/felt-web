@@ -100,10 +100,7 @@ export function ActionBar({ actions, onAction, pot = 0, step = 25 }: Props) {
             ))}
           </div>
           <Button
-            className={cn(
-              BUTTON,
-              "bg-neon-violet text-white hover:bg-neon-violet/90",
-            )}
+            className="h-11 w-full bg-neon-violet font-bold text-sm text-white hover:bg-neon-violet/90"
             onClick={() => onAction({ type: "raise", amount })}
           >
             {t("action.raiseTo", { amount: format(amount) })}

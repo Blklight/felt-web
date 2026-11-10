@@ -53,7 +53,12 @@ export function Table({ view, fourColor }: Props) {
         <div className="table-rim" />
         <div className="table-felt felt-surface" />
         <div className="table-line" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col items-center gap-3",
+            shape === "halfmoon" ? "justify-start pt-[7%]" : "justify-center",
+          )}
+        >
           {view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
