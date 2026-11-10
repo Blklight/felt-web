@@ -4,7 +4,11 @@ import { useState } from "react";
 import { CardBack } from "@/components/cards/card-back";
 import { Hand } from "@/components/cards/hand";
 import { PlayingCard } from "@/components/cards/playing-card";
-import { CARD_SKINS, type CardSkin } from "@/components/cards/skins";
+import {
+  CARD_BACKS,
+  CARD_SKINS,
+  type CardSkin,
+} from "@/components/cards/skins";
 import { Chip } from "@/components/chips/chip";
 import { ChipStack } from "@/components/chips/chip-stack";
 import type { ShowcaseCategory } from "@/components/showcase/types";
@@ -47,10 +51,23 @@ function PlayingCardDemo() {
 }
 
 function CardBackDemo() {
+  const active = useCardSkinStore((state) => state.back);
+  const setBack = useCardSkinStore((state) => state.setBack);
   return (
-    <div className="flex gap-3 rounded-xl p-4 felt-surface">
-      <CardBack variant="ink" />
-      <CardBack variant="neon" />
+    <div className="flex flex-wrap gap-5 rounded-xl p-4 felt-surface">
+      {CARD_BACKS.map((variant) => (
+        <div key={variant} className="flex flex-col items-center gap-2">
+          <CardBack variant={variant} />
+          <Button
+            size="sm"
+            variant={variant === active ? "default" : "outline"}
+            aria-pressed={variant === active}
+            onClick={() => setBack(variant)}
+          >
+            {variant}
+          </Button>
+        </div>
+      ))}
     </div>
   );
 }
@@ -113,13 +130,20 @@ function TableBlackjackDemo() {
 
 function ActionBarDemo() {
   const [last, setLast] = useState("");
+  const actions = pokerTable(2).you.legalActions;
   return (
-    <div className="flex flex-col gap-3">
-      <ActionBar
-        actions={pokerTable(2).you.legalActions}
-        pot={300}
-        onAction={(a) => setLast(JSON.stringify(a))}
-      />
+    <div className="flex flex-col gap-6">
+      {(["slider", "chips"] as const).map((mode) => (
+        <div key={mode} className="flex flex-col gap-2">
+          <p className="text-muted-foreground text-xs uppercase">{mode}</p>
+          <ActionBar
+            actions={actions}
+            pot={300}
+            mode={mode}
+            onAction={(a) => setLast(JSON.stringify(a))}
+          />
+        </div>
+      ))}
       <code className="text-muted-foreground text-xs">{last}</code>
     </div>
   );
@@ -127,8 +151,8 @@ function ActionBarDemo() {
 
 const SKIN_NAMES: Record<CardSkin, string> = {
   classic: "Classic",
-  "four-color": "Four-color",
   fantasy: "Fantasy",
+  vice: "Vice",
   noir: "Noir",
 };
 

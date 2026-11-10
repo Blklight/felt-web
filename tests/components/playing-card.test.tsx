@@ -55,7 +55,7 @@ describe("PlayingCard", () => {
   describe("skins", () => {
     const fill = (
       code: "As" | "Th" | "Td" | "Tc",
-      skin?: "classic" | "four-color" | "fantasy" | "noir",
+      skin?: "classic" | "fantasy" | "noir" | "vice",
     ) => {
       const { container, unmount } = render(
         <PlayingCard code={code} skin={skin} />,
@@ -74,14 +74,9 @@ describe("PlayingCard", () => {
       expect(fill("Tc", "classic")).toBe("var(--color-card-ink)");
     });
 
-    it("four-color: diamonds are blue and clubs green", () => {
-      expect(fill("Td", "four-color")).toBe("#1d4ed8");
-      expect(fill("Tc", "four-color")).toBe("#15803d");
-    });
-
     it("fantasy: hearts red, diamonds orange, clubs black, spades blue", () => {
       expect(fill("Th", "fantasy")).toBe("var(--color-suit-red)");
-      expect(fill("Td", "fantasy")).toBe("#c2570a");
+      expect(fill("Td", "fantasy")).toBe("#c026d3");
       expect(fill("Tc", "fantasy")).toBe("var(--color-card-ink)");
       expect(fill("As", "fantasy")).toBe("#1d4ed8");
     });
@@ -93,9 +88,32 @@ describe("PlayingCard", () => {
       expect(fill("Tc", "noir")).toBe("var(--color-bone)");
     });
 
+    it("vice: Monoton in the center and gradient faces for red and black cards", () => {
+      const red = render(<PlayingCard code="Th" skin="vice" />);
+      expect(
+        red.container.querySelector('text[font-family*="monoton"]'),
+      ).not.toBeNull();
+      const redFace = (red.container.firstElementChild as HTMLElement).style
+        .backgroundImage;
+      red.unmount();
+      const black = render(<PlayingCard code="As" skin="vice" />);
+      const blackFace = (black.container.firstElementChild as HTMLElement).style
+        .backgroundImage;
+      expect(redFace).toContain("linear-gradient");
+      expect(blackFace).toContain("linear-gradient");
+      expect(redFace).not.toBe(blackFace);
+    });
+
+    it("other skins keep Bungee Shade in the center", () => {
+      const { container } = render(<PlayingCard code="Th" skin="fantasy" />);
+      expect(
+        container.querySelector('text[font-family*="bungee-shade"]'),
+      ).not.toBeNull();
+    });
+
     it("follows the stored skin when none is given", () => {
       act(() => useCardSkinStore.setState({ skin: "fantasy" }));
-      expect(fill("Td")).toBe("#c2570a");
+      expect(fill("Td")).toBe("#c026d3");
       act(() => useCardSkinStore.setState({ skin: "classic" }));
       expect(fill("Td")).toBe("var(--color-suit-red)");
     });

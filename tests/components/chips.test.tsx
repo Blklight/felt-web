@@ -39,6 +39,17 @@ describe("Chip", () => {
   });
 });
 
+describe("Chip alignment", () => {
+  it.each([
+    1, 5, 25, 100, 500, 1000,
+  ])("centers the value of chip %i on both axes", (value) => {
+    render(<Chip value={value} />);
+    const text = screen.getByText(value >= 1000 ? "1K" : String(value));
+    expect(text).toHaveAttribute("text-anchor", "middle");
+    expect(text).toHaveAttribute("dy", "0.35em");
+  });
+});
+
 describe("ChipStack", () => {
   beforeEach(() => {
     act(() => useLanguageStore.setState({ language: "en" }));

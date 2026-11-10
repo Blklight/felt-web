@@ -149,4 +149,58 @@ describe("ActionBar", () => {
     await userEvent.tab();
     expect(screen.getByRole("button", { name: "Check" })).toHaveFocus();
   });
+
+  describe("chips mode", () => {
+    const CHIPS = { type: "raise", min: 100, max: 1000 } as const;
+
+    it("shows chips up to the legal maximum instead of the slider", async () => {
+      render(
+        <ActionBar
+          actions={[{ type: "raise", min: 100, max: 300 }]}
+          mode="chips"
+          onAction={vi.fn()}
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "Raise" }));
+      expect(
+        screen.queryByRole("slider", { hidden: true }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add 5" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Add 25" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Add 100" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Add 500" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("adds the clicked chip to the amount and confirms it", async () => {
+      const onAction = vi.fn();
+      render(<ActionBar actions={[CHIPS]} mode="chips" onAction={onAction} />);
+      await userEvent.click(screen.getByRole("button", { name: "Raise" }));
+      await userEvent.click(screen.getByRole("button", { name: "Add 100" }));
+      await userEvent.click(screen.getByRole("button", { name: "Add 25" }));
+      await userEvent.click(
+        screen.getByRole("button", { name: "Raise to 225" }),
+      );
+      expect(onAction).toHaveBeenCalledWith({ type: "raise", amount: 225 });
+    });
+
+    it("never goes past the maximum and resets with Min", async () => {
+      render(<ActionBar actions={[CHIPS]} mode="chips" onAction={vi.fn()} />);
+      await userEvent.click(screen.getByRole("button", { name: "Raise" }));
+      for (let i = 0; i < 3; i++)
+        await userEvent.click(screen.getByRole("button", { name: "Add 500" }));
+      expect(
+        screen.getByRole("button", { name: "Raise to 1,000" }),
+      ).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "Min" }));
+      expect(
+        screen.getByRole("button", { name: "Raise to 100" }),
+      ).toBeInTheDocument();
+    });
+  });
 });

@@ -3,6 +3,7 @@
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { BetSlider } from "@/components/chips/bet-slider";
+import { Chip } from "@/components/chips/chip";
 import { Button } from "@/components/ui/button";
 import type { LegalAction } from "@/dev/view-types";
 import type { MessageKey } from "@/i18n/dictionaries";
@@ -16,7 +17,10 @@ type Props = {
   onAction: (action: Chosen) => void;
   pot?: number;
   step?: number;
+  mode?: "slider" | "chips";
 };
+
+const CHIP_VALUES = [5, 25, 100, 500, 1000];
 
 const LABELS: Record<LegalAction["type"], MessageKey> = {
   fold: "action.fold",
@@ -31,7 +35,13 @@ const LABELS: Record<LegalAction["type"], MessageKey> = {
 
 const BUTTON = "h-11 flex-1 text-sm font-bold";
 
-export function ActionBar({ actions, onAction, pot = 0, step = 25 }: Props) {
+export function ActionBar({
+  actions,
+  onAction,
+  pot = 0,
+  step = 25,
+  mode = "slider",
+}: Props) {
   const t = useT();
   const format = useFormatNumber();
   const [open, setOpen] = useState(false);
@@ -53,32 +63,48 @@ export function ActionBar({ actions, onAction, pot = 0, step = 25 }: Props) {
           <output className="text-center font-bungee text-3xl text-neon-cyan leading-none">
             {format(amount)}
           </output>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="border-bone/40 bg-transparent text-bone"
-              aria-label={t("stepper.less")}
-              onClick={() => setPicked(clamp(amount - step))}
-            >
-              <MinusIcon />
-            </Button>
-            <BetSlider
-              min={min}
-              max={max}
-              value={amount}
-              onChange={setPicked}
-            />
-            <Button
-              variant="outline"
-              size="icon"
-              className="border-bone/40 bg-transparent text-bone"
-              aria-label={t("stepper.more")}
-              onClick={() => setPicked(clamp(amount + step))}
-            >
-              <PlusIcon />
-            </Button>
-          </div>
+          {mode === "chips" ? (
+            <div className="flex justify-center gap-2">
+              {CHIP_VALUES.filter((value) => value <= max).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-label={t("chip.add", { value })}
+                  className="rounded-full outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                  onClick={() => setPicked(clamp(amount + value))}
+                >
+                  <Chip value={value} className="size-12" />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-bone/40 bg-transparent text-bone"
+                aria-label={t("stepper.less")}
+                onClick={() => setPicked(clamp(amount - step))}
+              >
+                <MinusIcon />
+              </Button>
+              <BetSlider
+                min={min}
+                max={max}
+                value={amount}
+                onChange={setPicked}
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-bone/40 bg-transparent text-bone"
+                aria-label={t("stepper.more")}
+                onClick={() => setPicked(clamp(amount + step))}
+              >
+                <PlusIcon />
+              </Button>
+            </div>
+          )}
           <div className="flex gap-2">
             {(
               [

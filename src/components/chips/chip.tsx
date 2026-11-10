@@ -87,7 +87,7 @@ export function Chip({
         x="32"
         y="32"
         textAnchor="middle"
-        dominantBaseline="central"
+        dy="0.35em"
         fontFamily="var(--font-barlow), sans-serif"
         fontWeight="700"
         fontSize={shown.length > 2 ? 15 : 18}
