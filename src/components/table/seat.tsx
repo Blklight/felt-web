@@ -16,21 +16,17 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
 
   if (seat.status === "empty") {
     return (
-      <div
-        // biome-ignore lint/a11y/useSemanticElements: a fieldset implies form controls; a seat is a plain labeled group
-        role="group"
+      <fieldset
         aria-label={t("seat.free")}
         className="flex h-16 w-24 items-center justify-center rounded-lg border border-bone/20 border-dashed text-bone/60 text-xs"
       >
         {t("seat.free")}
-      </div>
+      </fieldset>
     );
   }
 
   return (
-    <div
-      // biome-ignore lint/a11y/useSemanticElements: a fieldset implies form controls; a seat is a plain labeled group
-      role="group"
+    <fieldset
       aria-label={seat.name}
       aria-current={seat.isTurn ? "true" : undefined}
       className={cn(
@@ -64,6 +60,6 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
         )}
       </div>
       <ChipStack amount={seat.bet} />
-    </div>
+    </fieldset>
   );
 }
