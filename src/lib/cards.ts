@@ -12,3 +12,14 @@ export function parseCard(code: CardCode): ParsedCard {
 export function suitColor(suit: Suit): "red" | "black" {
   return suit === "h" || suit === "d" ? "red" : "black";
 }
+
+export function keyedCards(
+  cards: CardCode[],
+): { code: CardCode; key: string }[] {
+  const seen = new Map<CardCode, number>();
+  return cards.map((code) => {
+    const n = (seen.get(code) ?? 0) + 1;
+    seen.set(code, n);
+    return { code, key: `${code}#${n}` };
+  });
+}

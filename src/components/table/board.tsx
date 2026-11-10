@@ -1,25 +1,27 @@
 import { PlayingCard } from "@/components/cards/playing-card";
 import type { CardCode } from "@/dev/view-types";
+import { keyedCards } from "@/lib/cards";
 
 type Props = { cards: CardCode[]; slots?: number; fourColor?: boolean };
 
 export function Board({ cards, slots = 5, fourColor }: Props) {
-  const empty = Math.max(0, slots - cards.length);
+  const empty = Array.from(
+    { length: Math.max(0, slots - cards.length) },
+    (_, n) => cards.length + n,
+  );
   return (
     <div className="flex gap-1.5">
-      {cards.map((code, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: positional board slots
+      {keyedCards(cards).map(({ code, key }) => (
         <PlayingCard
-          key={i}
+          key={key}
           code={code}
           fourColor={fourColor}
           className="w-8 sm:w-14"
         />
       ))}
-      {Array.from({ length: empty }, (_, i) => (
+      {empty.map((slot) => (
         <div
-          // biome-ignore lint/suspicious/noArrayIndexKey: static placeholders
-          key={i}
+          key={slot}
           aria-hidden="true"
           className="aspect-[64/90] w-8 rounded-md sm:w-14 border border-bone/20 border-dashed"
         />
