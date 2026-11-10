@@ -1,10 +1,11 @@
 import { PlayingCard } from "@/components/cards/playing-card";
+import type { CardSkin } from "@/components/cards/skins";
 import type { CardCode } from "@/dev/view-types";
 import { keyedCards } from "@/lib/cards";
 
-type Props = { cards: CardCode[]; slots?: number };
+type Props = { cards: CardCode[]; slots?: number; skin?: CardSkin };
 
-export function Board({ cards, slots = 5 }: Props) {
+export function Board({ cards, slots = 5, skin }: Props) {
   const empty = Array.from(
     { length: Math.max(0, slots - cards.length) },
     (_, n) => cards.length + n,

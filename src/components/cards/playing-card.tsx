@@ -2,6 +2,7 @@
 
 import { CardBack } from "@/components/cards/card-back";
 import {
+  type CardBackVariant,
   type CardSkin,
   centerValue,
   faceStyle,
@@ -14,16 +15,21 @@ import { parseCard } from "@/lib/cards";
 import { cn } from "@/lib/utils";
 import { useCardSkinStore } from "@/store/useCardSkinStore";
 
-type Props = { code: CardCode; skin?: CardSkin; className?: string };
+type Props = {
+  code: CardCode;
+  skin?: CardSkin;
+  back?: CardBackVariant;
+  className?: string;
+};
 
 const INDEX_FONT = "var(--font-barlow), sans-serif";
 
-export function PlayingCard({ code, skin, className }: Props) {
+export function PlayingCard({ code, skin, back, className }: Props) {
   const t = useT();
   const storedSkin = useCardSkinStore((state) => state.skin);
   const activeSkin = skin ?? storedSkin;
   const card = parseCard(code);
-  if (card.hidden) return <CardBack className={className} />;
+  if (card.hidden) return <CardBack variant={back} className={className} />;
 
   const fill = suitFill(card.suit, activeSkin);
   const label = t("card.label", {

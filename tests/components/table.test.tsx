@@ -1,7 +1,8 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { Table } from "@/components/table/table";
 import { blackjackTable, pokerTable } from "@/dev/fixtures";
+import { useCardSkinStore } from "@/store/useCardSkinStore";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
 describe("Table", () => {
@@ -57,5 +58,61 @@ describe("Table", () => {
   it("shows each player's bet on the felt", () => {
     render(<Table view={pokerTable(3)} />);
     expect(screen.getByLabelText("Mara's stake")).toHaveTextContent("50");
+  });
+
+  describe("skins", () => {
+    const cardsOf = (name: string) =>
+      within(screen.getByRole("group", { name })).getAllByRole("img");
+    const skinOf = (el: HTMLElement | undefined) =>
+      el?.parentElement?.getAttribute("data-skin");
+    const dealerCard = () =>
+      screen
+        .getAllByRole("img", { name: "King of clubs" })
+        .find((el) => !el.closest("fieldset"));
+
+    beforeEach(() => {
+      act(() =>
+        useCardSkinStore.setState({
+          skin: "classic",
+          back: "ink",
+          overrideOthers: false,
+        }),
+      );
+    });
+
+    it("draws each player's face-up cards in that player's skin", () => {
+      render(<Table view={blackjackTable} />);
+      expect(skinOf(cardsOf("Mara")[0])).toBe("noir");
+      expect(skinOf(cardsOf("Ines")[0])).toBe("vice");
+      expect(skinOf(cardsOf("You")[0])).toBe("classic");
+    });
+
+    it("draws shared cards in the table skin", () => {
+      render(<Table view={{ ...blackjackTable, boardSkinId: "fantasy" }} />);
+      expect(skinOf(dealerCard())).toBe("fantasy");
+    });
+
+    it("draws a hidden card with its owner's back", () => {
+      const { container } = render(<Table view={pokerTable(3)} />);
+      const group = screen.getByRole("group", { name: "Theo" });
+      expect(group.querySelector("[data-back='vice']")).not.toBeNull();
+      expect(container.querySelector("[data-back='neon']")).not.toBeNull();
+    });
+
+    it("uses my own skin and back everywhere when the preference is on", () => {
+      act(() =>
+        useCardSkinStore.setState({
+          skin: "fantasy",
+          back: "suits",
+          overrideOthers: true,
+        }),
+      );
+      const { container } = render(<Table view={blackjackTable} />);
+      expect(skinOf(cardsOf("Mara")[0])).toBe("fantasy");
+      expect(skinOf(dealerCard())).toBe("fantasy");
+      expect(
+        container.querySelectorAll("[data-back]:not([data-back='suits'])"),
+      ).toHaveLength(0);
+    });
   });
 });

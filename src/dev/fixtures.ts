@@ -1,6 +1,15 @@
 import type { SeatView, TableView } from "@/dev/view-types";
 
 const NAMES = ["You", "Mara", "Theo", "Ines", "Kai", "Luz"];
+const SKINS = [
+  "classic",
+  "noir",
+  "fantasy",
+  "vice",
+  "classic",
+  "noir",
+] as const;
+const BACKS = ["ink", "neon", "vice", "suits", "ink", "neon"] as const;
 const HIDDEN = ["??", "??"] as const;
 
 function seat(i: number, overrides: Partial<SeatView> = {}): SeatView {
@@ -8,6 +17,8 @@ function seat(i: number, overrides: Partial<SeatView> = {}): SeatView {
     seat: i,
     name: NAMES[i] ?? `Player ${i + 1}`,
     avatarId: `a${i + 1}`,
+    skinId: SKINS[i] ?? "classic",
+    backId: BACKS[i] ?? "ink",
     stack: 1500 - i * 120,
     bet: i === 1 ? 50 : 0,
     cards: i === 0 ? ["As", "Kd"] : [...HIDDEN],
@@ -24,6 +35,8 @@ export function pokerTable(seatCount: 2 | 3 | 4 | 5 | 6): TableView {
     phase: "flop",
     seats: Array.from({ length: seatCount }, (_, i) => seat(i)),
     board: ["7h", "Td", "2c"],
+    boardSkinId: "classic",
+    boardBackId: "ink",
     pots: [300],
     secondsLeft: 18,
     you: {
@@ -66,6 +79,8 @@ export const blackjackTable: TableView = {
     }),
   ],
   board: ["Kc", "??"],
+  boardSkinId: "classic",
+  boardBackId: "ink",
   pots: [],
   secondsLeft: 12,
   you: {
