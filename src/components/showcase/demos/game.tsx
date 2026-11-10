@@ -151,6 +151,7 @@ function CardSkinsDemo() {
           <Hand
             cards={["As", "Kh", "Qd", "Jc"]}
             skin={skin}
+            className="space-x-2"
             cardClassName="w-14"
           />
         </div>
