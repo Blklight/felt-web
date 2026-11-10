@@ -6,6 +6,7 @@ import {
   JetBrains_Mono,
   Monoton,
 } from "next/font/google";
+import { MotionProvider } from "@/components/motion-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -65,7 +66,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           <QueryProvider>
-            <TooltipProvider>{children}</TooltipProvider>
+            <MotionProvider>
+              <TooltipProvider>{children}</TooltipProvider>
+            </MotionProvider>
             <Toaster />
           </QueryProvider>
         </ThemeProvider>

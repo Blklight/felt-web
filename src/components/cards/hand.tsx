@@ -15,12 +15,13 @@ type Props = {
 export function Hand({ cards, skin, back, className, cardClassName }: Props) {
   return (
     <div className={cn("flex -space-x-5", className)}>
-      {keyedCards(cards).map(({ code, key }) => (
+      {keyedCards(cards).map(({ code, key }, i) => (
         <PlayingCard
           key={key}
           code={code}
           skin={skin}
           back={back}
+          delay={i * 0.08}
           className={cn("w-11 sm:w-16", cardClassName)}
         />
       ))}

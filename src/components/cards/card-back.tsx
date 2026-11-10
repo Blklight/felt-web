@@ -1,13 +1,15 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useId } from "react";
+import { DEAL_IN, withDelay } from "@/components/cards/card-motion";
 import type { CardBackVariant } from "@/components/cards/skins";
 import { SUIT_PATHS } from "@/components/cards/suits";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardSkinStore } from "@/store/useCardSkinStore";
 
-type Props = { variant?: CardBackVariant; className?: string };
+type Props = { variant?: CardBackVariant; className?: string; delay?: number };
 
 const VALUE_FONT = "var(--font-bungee-shade), sans-serif";
 const NEON_FONT = "var(--font-monoton), sans-serif";
@@ -225,14 +227,15 @@ const WRAPPER: Record<CardBackVariant, string> = {
 const VICE_BACKGROUND =
   "linear-gradient(180deg, #2a0f5c 0%, #7a1f7e 45%, #ff4d8d 80%, #ff9a4d 100%)";
 
-export function CardBack({ variant, className }: Props) {
+export function CardBack({ variant, className, delay = 0 }: Props) {
   const t = useT();
   const storedBack = useCardSkinStore((state) => state.back);
   const active = variant ?? storedBack;
   const Body = BODY[active];
   return (
-    <div
+    <motion.div
       data-back={active}
+      {...withDelay(DEAL_IN, delay)}
       style={
         active === "vice" ? { backgroundImage: VICE_BACKGROUND } : undefined
       }
@@ -250,6 +253,6 @@ export function CardBack({ variant, className }: Props) {
       >
         <Body />
       </svg>
-    </div>
+    </motion.div>
   );
 }

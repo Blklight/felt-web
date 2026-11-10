@@ -8,7 +8,8 @@ export function Timer({ secondsLeft }: { secondsLeft: number | null }) {
   return (
     <span
       role="timer"
-      className="rounded-full border border-neon-cyan px-2 py-0.5 tabular-nums text-xs text-neon-cyan"
+      data-urgent={secondsLeft <= 5 ? "true" : undefined}
+      className="timer rounded-full border border-neon-cyan px-2 py-0.5 tabular-nums text-xs text-neon-cyan"
     >
       {t("timer.seconds", { seconds: secondsLeft })}
     </span>

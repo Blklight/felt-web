@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "motion/react";
 import { CardBack } from "@/components/cards/card-back";
+import { FLIP_IN, withDelay } from "@/components/cards/card-motion";
 import {
   type CardBackVariant,
   type CardSkin,
@@ -20,16 +22,18 @@ type Props = {
   skin?: CardSkin;
   back?: CardBackVariant;
   className?: string;
+  delay?: number;
 };
 
 const INDEX_FONT = "var(--font-barlow), sans-serif";
 
-export function PlayingCard({ code, skin, back, className }: Props) {
+export function PlayingCard({ code, skin, back, className, delay = 0 }: Props) {
   const t = useT();
   const storedSkin = useCardSkinStore((state) => state.skin);
   const activeSkin = skin ?? storedSkin;
   const card = parseCard(code);
-  if (card.hidden) return <CardBack variant={back} className={className} />;
+  if (card.hidden)
+    return <CardBack variant={back} className={className} delay={delay} />;
 
   const fill = suitFill(card.suit, activeSkin);
   const label = t("card.label", {
@@ -68,9 +72,10 @@ export function PlayingCard({ code, skin, back, className }: Props) {
   );
 
   return (
-    <div
+    <motion.div
       data-skin={activeSkin}
-      style={faceStyle(activeSkin, card.suit)}
+      {...withDelay(FLIP_IN, delay)}
+      style={{ ...faceStyle(activeSkin, card.suit), transformPerspective: 700 }}
       className={cn(
         "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg shadow-md",
         className,
@@ -96,6 +101,6 @@ export function PlayingCard({ code, skin, back, className }: Props) {
           {rank}
         </text>
       </svg>
-    </div>
+    </motion.div>
   );
 }

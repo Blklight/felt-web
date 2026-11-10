@@ -60,6 +60,19 @@ describe("Timer", () => {
     expect(screen.getByRole("timer")).toHaveTextContent("18s left");
   });
 
+  it.each([
+    [5, "true"],
+    [1, "true"],
+    [6, null],
+    [18, null],
+  ])("flags the last seconds as urgent (%i s)", (seconds, expected) => {
+    act(() => useLanguageStore.setState({ language: "en" }));
+    render(<Timer secondsLeft={seconds} />);
+    expect(screen.getByRole("timer").getAttribute("data-urgent")).toBe(
+      expected,
+    );
+  });
+
   it("renders nothing without a deadline", () => {
     render(<Timer secondsLeft={null} />);
     expect(screen.queryByRole("timer")).not.toBeInTheDocument();

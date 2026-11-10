@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { Chip } from "@/components/chips/chip";
 import { useFormatNumber } from "@/i18n/use-format-number";
 
@@ -30,14 +31,17 @@ export function ChipStack({ amount }: { amount: number }) {
         style={{ height: `${36 + (chips.length - 1) * LIFT}px` }}
       >
         {chips.map((value, i) => (
-          <span
+          <motion.span
             // biome-ignore lint/suspicious/noArrayIndexKey: chips of equal value repeat
             key={i}
+            initial={{ y: -14, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: i * 0.06, duration: 0.2, ease: "easeOut" }}
             className="absolute left-0"
             style={{ bottom: `${i * LIFT}px`, zIndex: i }}
           >
             <Chip value={value} />
-          </span>
+          </motion.span>
         ))}
       </div>
       <span className="font-bold text-bone text-sm tabular-nums">

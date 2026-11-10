@@ -577,6 +577,20 @@
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .timer[data-urgent="true"] {
+    animation: timer-urgent 0.8s ease-in-out infinite;
+  }
+}
+
+@keyframes timer-urgent {
+  50% {
+    border-color: var(--color-suit-red);
+    color: #ff8a80;
+    box-shadow: 0 0 10px rgb(255 90 79 / 0.6);
+  }
+}
+
 @keyframes neon-pulse {
   50% {
     box-shadow:
