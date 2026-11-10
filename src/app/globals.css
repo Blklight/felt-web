@@ -127,6 +127,16 @@
   --color-magenta-800: oklch(45.612% 0.20963 328.36);
   --color-magenta-900: oklch(32.051% 0.14731 328.36);
   --color-magenta-950: oklch(24.722% 0.11362 328.36);
+
+  /* --- Felt table --- */
+  --color-felt: #17493a;
+  --color-felt-deep: #0b241c;
+  --color-felt-rim: #1b3a30;
+  --color-bone: #faf6ea;
+  --color-card-ink: #111111;
+  --color-suit-red: #b3261e;
+  --color-neon-violet: #7c5cff;
+  --color-neon-cyan: #7cf4ff;
 }
 
 /* ============================================================
@@ -457,6 +467,38 @@
 .background-texture {
   background-image: url("../assets/images/noisy.png");
   background-attachment: local;
+}
+
+.felt-surface {
+  background-color: var(--color-felt-deep);
+  background-image:
+    url("../assets/images/noisy.png"),
+    radial-gradient(
+      ellipse at center,
+      var(--color-felt),
+      var(--color-felt-deep)
+    );
+  background-blend-mode: soft-light, normal;
+}
+
+.neon-glow {
+  box-shadow:
+    0 0 0 1px var(--color-neon-violet),
+    0 0 14px color-mix(in oklab, var(--color-neon-violet) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .neon-pulse {
+    animation: neon-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes neon-pulse {
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-neon-cyan),
+      0 0 20px color-mix(in oklab, var(--color-neon-cyan) 60%, transparent);
+  }
 }
 
 .texturization-background::after {
