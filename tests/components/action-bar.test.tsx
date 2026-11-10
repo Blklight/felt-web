@@ -203,4 +203,15 @@ describe("ActionBar", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("can start with the raise panel open", () => {
+    render(<ActionBar actions={[RAISE]} defaultOpen onAction={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Raise" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    expect(
+      screen.getByRole("button", { name: "Raise to 100" }),
+    ).toBeInTheDocument();
+  });
 });

@@ -140,6 +140,7 @@ function ActionBarDemo() {
             actions={actions}
             pot={300}
             mode={mode}
+            defaultOpen
             onAction={(a) => setLast(JSON.stringify(a))}
           />
         </div>

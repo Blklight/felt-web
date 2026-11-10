@@ -18,6 +18,7 @@ type Props = {
   pot?: number;
   step?: number;
   mode?: "slider" | "chips";
+  defaultOpen?: boolean;
 };
 
 const CHIP_VALUES = [5, 25, 100, 500, 1000];
@@ -41,10 +42,11 @@ export function ActionBar({
   pot = 0,
   step = 25,
   mode = "slider",
+  defaultOpen = false,
 }: Props) {
   const t = useT();
   const format = useFormatNumber();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [picked, setPicked] = useState<number | null>(null);
 
   const raise = actions.find((a) => a.type === "raise");
