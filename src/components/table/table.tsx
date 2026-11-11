@@ -5,6 +5,7 @@ import { Deck, SHUFFLE_SECONDS } from "@/components/cards/deck";
 import { Hand } from "@/components/cards/hand";
 import { ChipFlight } from "@/components/chips/chip-flight";
 import { ChipStack } from "@/components/chips/chip-stack";
+import { useLogText } from "@/components/table/action-log";
 import { Board } from "@/components/table/board";
 import { dealSchedule } from "@/components/table/deal-schedule";
 import { Pot } from "@/components/table/pot";
@@ -130,6 +131,14 @@ export function Table({ view, animateDeal = false }: Props) {
         : t("result.winsNoHand", { name, amount });
     })
     .join(" · ");
+  const logText = useLogText();
+  const lastEntry = view.log?.at(-1);
+  const spoken =
+    view.you.legalActions.length > 0
+      ? t("turn.yours")
+      : lastEntry
+        ? logText(lastEntry, view.seats, view.you.seat)
+        : "";
   const look = useCardLook(view.boardSkinId, view.boardBackId);
   const { shape, slotOf, betOf } = layout(view);
   const deck = deckPosition(shape, view.seats.length);
@@ -165,6 +174,9 @@ export function Table({ view, animateDeal = false }: Props) {
         data-shape={shape}
         className={cn("table relative mx-auto w-full", BOX[shape])}
       >
+        <div aria-live="polite" className="sr-only">
+          {spoken}
+        </div>
         <div className="table-rim" />
         <div className="table-felt felt-surface" />
         <div className="table-line" />

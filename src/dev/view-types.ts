@@ -48,6 +48,26 @@ export type HandInfo = { rank: HandRank; cards: CardCode[] };
 
 export type Winner = { seat: number; amount: number; hand?: HandInfo };
 
+export type LogKind =
+  | "blind"
+  | "fold"
+  | "check"
+  | "call"
+  | "bet"
+  | "raise"
+  | "all-in"
+  | "win"
+  | "hit"
+  | "stand"
+  | "double";
+
+export type LogEntry = {
+  id: number;
+  seat: number;
+  kind: LogKind;
+  amount?: number;
+};
+
 export type SeatView = {
   seat: number;
   name: string;
@@ -59,6 +79,7 @@ export type SeatView = {
   cards: CardCode[];
   status: "active" | "folded" | "all-in" | "out" | "empty";
   isDealer: boolean;
+  blind?: "small" | "big";
   isTurn: boolean;
 };
 
@@ -73,4 +94,5 @@ export type TableView = {
   secondsLeft: number | null;
   you: { seat: number | null; legalActions: LegalAction[]; hand?: HandInfo };
   result?: { winners: Winner[] };
+  log?: LogEntry[];
 };
