@@ -206,6 +206,8 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
                 })}
               </p>
             </div>
+          ) : view.phase === "betting" ? (
+            <p className="font-semibold text-bone">{t("table.placeBets")}</p>
           ) : view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
@@ -220,13 +222,20 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
               />
             </>
           ) : (
-            <Hand
-              cards={view.board}
-              skin={look.skin}
-              back={look.back}
-              dealFrom={dealFrom}
-              dealDelays={schedule.board}
-            />
+            <div className="flex flex-col items-center gap-1">
+              <Hand
+                cards={view.board}
+                skin={look.skin}
+                back={look.back}
+                dealFrom={dealFrom}
+                dealDelays={schedule.board}
+              />
+              {view.dealerTotal !== undefined && (
+                <span className="rounded-full bg-card-ink/80 px-2 py-0.5 font-semibold text-bone text-xs tabular-nums">
+                  {t("dealer.total", { total: view.dealerTotal })}
+                </span>
+              )}
+            </div>
           )}
           {announcement ? (
             <output className="rounded-full border border-neon-cyan bg-card-ink/80 px-3 py-1 font-semibold text-neon-cyan text-sm">

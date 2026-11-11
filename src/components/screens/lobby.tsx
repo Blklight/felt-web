@@ -84,7 +84,9 @@ export function Lobby() {
             </div>
           </>
         )}
-        <Button onClick={() => router.push(`/table?code=${DEMO_CODE}`)}>
+        <Button
+          onClick={() => router.push(`/table?code=${DEMO_CODE}&game=${game}`)}
+        >
           {t("lobby.createButton")}
         </Button>
       </section>
