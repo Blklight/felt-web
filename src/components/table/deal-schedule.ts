@@ -1,5 +1,7 @@
 import type { TableView } from "@/dev/view-types";
 
+export const FLOP = 3;
+
 export function dealSchedule(
   view: TableView,
   step: number,
@@ -21,6 +23,9 @@ export function dealSchedule(
   const holes = Math.max(0, ...view.seats.map((s) => s.cards.length));
   const board = blackjack
     ? view.board.map((_, round) => (round * perRound + order.length) * step)
-    : Array.from({ length: 5 }, (_, k) => (holes * perRound + k) * step + 0.3);
+    : Array.from(
+        { length: FLOP },
+        (_, k) => (holes * perRound + k) * step + 0.3,
+      );
   return { seats, board };
 }

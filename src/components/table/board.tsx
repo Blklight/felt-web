@@ -1,6 +1,7 @@
-import type { RefObject } from "react";
+import { type RefObject, useRef } from "react";
 import type { CardBackVariant, CardSkin } from "@/components/cards/skins";
 import { TableCard } from "@/components/cards/table-card";
+import { FLOP } from "@/components/table/deal-schedule";
 import type { CardCode } from "@/dev/view-types";
 
 type Props = {
@@ -26,8 +27,10 @@ export function Board({
 }: Props) {
   const spots = Array.from(
     { length: slots },
-    (_, k): CardCode | null => cards[k] ?? (faceDown ? "??" : null),
+    (_, k): CardCode | null => cards[k] ?? (faceDown && k < FLOP ? "??" : null),
   );
+  // Cards on the table at the first render follow the deal schedule; the turn and river arrive later, straight from the deck.
+  const dealtAtStart = useRef(spots.map((code) => code !== null));
   return (
     <div className="flex gap-1.5">
       {spots.map((code, k) =>
@@ -46,7 +49,7 @@ export function Board({
             skin={skin}
             back={back}
             dealFrom={dealFrom}
-            dealDelay={dealDelays?.[k] ?? 0}
+            dealDelay={dealtAtStart.current[k] ? (dealDelays?.[k] ?? 0) : 0}
             className={CARD}
           />
         ),
