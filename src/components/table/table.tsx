@@ -24,7 +24,11 @@ import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardLook } from "@/store/useCardSkinStore";
 
-type Props = { view: TableView; animateDeal?: boolean };
+type Props = {
+  view: TableView;
+  animateDeal?: boolean;
+  onSit?: (seat: number) => void;
+};
 
 type Flight = {
   id: number;
@@ -113,7 +117,7 @@ function flightsBetween(
 
 const percent = (p: Point) => ({ left: `${p.x}%`, top: `${p.y}%` });
 
-export function Table({ view, animateDeal = false }: Props) {
+export function Table({ view, animateDeal = false, onSit }: Props) {
   const t = useT();
   const format = useFormatNumber();
   const winners = view.result?.winners ?? [];
@@ -192,7 +196,17 @@ export function Table({ view, animateDeal = false }: Props) {
             shape === "halfmoon" ? "justify-start pt-[7%]" : "justify-center",
           )}
         >
-          {view.game === "poker" ? (
+          {view.phase === "waiting" ? (
+            <div className="flex flex-col items-center gap-1 text-center text-bone">
+              <p className="font-semibold">{t("table.waiting")}</p>
+              <p className="text-bone/70 text-sm">
+                {t("table.seated", {
+                  seated: view.seats.filter((s) => s.status !== "empty").length,
+                  total: view.seats.length,
+                })}
+              </p>
+            </div>
+          ) : view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
               <Board
@@ -218,7 +232,7 @@ export function Table({ view, animateDeal = false }: Props) {
             <output className="rounded-full border border-neon-cyan bg-card-ink/80 px-3 py-1 font-semibold text-neon-cyan text-sm">
               {announcement}
             </output>
-          ) : (
+          ) : view.phase === "waiting" ? null : (
             <Timer secondsLeft={view.secondsLeft} />
           )}
         </div>
@@ -249,6 +263,7 @@ export function Table({ view, animateDeal = false }: Props) {
               dealDelays={schedule.seats[i]}
               highlight={highlight}
               winner={winners.some((w) => w.seat === seat.seat)}
+              onSit={view.you.seat === null ? onSit : undefined}
             />
           </div>
         ))}

@@ -15,6 +15,7 @@ type Props = {
   dealDelays?: number[];
   winner?: boolean;
   highlight?: (code: CardCode) => "win" | "dim" | undefined;
+  onSit?: (seat: number) => void;
 };
 
 export function Seat({
@@ -24,6 +25,7 @@ export function Seat({
   dealDelays,
   winner = false,
   highlight,
+  onSit,
 }: Props) {
   const t = useT();
   const format = useFormatNumber();
@@ -35,7 +37,18 @@ export function Seat({
         aria-label={t("seat.free")}
         className="flex h-12 w-[72px] items-center justify-center rounded-md border border-bone/30 border-dashed bg-card-ink/60 text-center text-[11px] text-bone/70 sm:w-20"
       >
-        {t("seat.free")}
+        {onSit ? (
+          <button
+            type="button"
+            aria-label={t("seat.sitAt", { n: seat.seat + 1 })}
+            onClick={() => onSit(seat.seat)}
+            className="size-full rounded-md font-semibold text-neon-cyan outline-none transition-colors hover:bg-neon-cyan/10 focus-visible:ring-2 focus-visible:ring-neon-cyan"
+          >
+            {t("seat.sit")}
+          </button>
+        ) : (
+          t("seat.free")
+        )}
       </fieldset>
     );
   }

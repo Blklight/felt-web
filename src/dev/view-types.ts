@@ -95,4 +95,5 @@ export type TableView = {
   you: { seat: number | null; legalActions: LegalAction[]; hand?: HandInfo };
   result?: { winners: Winner[] };
   log?: LogEntry[];
+  buyIn?: { min: number; max: number };
 };
