@@ -1,5 +1,6 @@
 "use client";
 
+import type { Point } from "@/components/cards/card-motion";
 import { Hand } from "@/components/cards/hand";
 import type { SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
@@ -7,9 +8,14 @@ import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardLook } from "@/store/useCardSkinStore";
 
-type Props = { seat: SeatView; isYou?: boolean };
+type Props = {
+  seat: SeatView;
+  isYou?: boolean;
+  from?: Point;
+  dealDelay?: number;
+};
 
-export function Seat({ seat, isYou = false }: Props) {
+export function Seat({ seat, isYou = false, from, dealDelay }: Props) {
   const t = useT();
   const format = useFormatNumber();
   const look = useCardLook(seat.skinId, seat.backId);
@@ -38,6 +44,8 @@ export function Seat({ seat, isYou = false }: Props) {
         cards={seat.cards}
         skin={look.skin}
         back={look.back}
+        from={from}
+        dealDelay={dealDelay}
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />

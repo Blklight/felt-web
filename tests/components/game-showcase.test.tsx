@@ -31,6 +31,7 @@ describe("game showcase", () => {
       "table-blackjack",
       "action-bar",
       "card-skins",
+      "animations",
     ]);
   });
 });

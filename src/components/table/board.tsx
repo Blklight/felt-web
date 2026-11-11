@@ -1,11 +1,18 @@
+import type { Point } from "@/components/cards/card-motion";
 import { PlayingCard } from "@/components/cards/playing-card";
 import type { CardSkin } from "@/components/cards/skins";
 import type { CardCode } from "@/dev/view-types";
 import { keyedCards } from "@/lib/cards";
 
-type Props = { cards: CardCode[]; slots?: number; skin?: CardSkin };
+type Props = {
+  cards: CardCode[];
+  slots?: number;
+  skin?: CardSkin;
+  from?: Point;
+  dealDelay?: number;
+};
 
-export function Board({ cards, slots = 5, skin }: Props) {
+export function Board({ cards, slots = 5, skin, from, dealDelay = 0 }: Props) {
   const empty = Array.from(
     { length: Math.max(0, slots - cards.length) },
     (_, n) => cards.length + n,
@@ -17,7 +24,8 @@ export function Board({ cards, slots = 5, skin }: Props) {
           key={key}
           code={code}
           skin={skin}
-          delay={i * 0.1}
+          delay={dealDelay + i * 0.1}
+          from={from}
           className="w-10 sm:w-16"
         />
       ))}
