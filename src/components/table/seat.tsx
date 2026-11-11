@@ -77,6 +77,11 @@ export function Seat({
         <p className="tabular-nums text-[11px] text-bone/80 leading-tight">
           {format(seat.stack)}
         </p>
+        {seat.status === "all-in" && (
+          <p className="mt-0.5 rounded-sm bg-neon-violet font-bold text-[10px] text-white uppercase tracking-wide">
+            {t("seat.allIn")}
+          </p>
+        )}
       </div>
       {seat.isDealer && (
         <span
@@ -85,6 +90,17 @@ export function Seat({
           className="absolute -top-1 -right-2 z-20 flex size-5 items-center justify-center rounded-full bg-bone font-bold text-[10px] text-card-ink"
         >
           D
+        </span>
+      )}
+      {seat.blind && (
+        <span
+          role="img"
+          aria-label={t(
+            seat.blind === "small" ? "seat.smallBlind" : "seat.bigBlind",
+          )}
+          className="absolute -top-1 -left-2 z-20 flex h-5 min-w-5 items-center justify-center rounded-full border border-neon-cyan bg-card-ink px-1 font-bold text-[9px] text-neon-cyan"
+        >
+          {seat.blind === "small" ? "SB" : "BB"}
         </span>
       )}
     </fieldset>

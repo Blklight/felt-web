@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { SHUFFLE_SECONDS } from "@/components/cards/deck";
 import { pokerTable } from "@/dev/fixtures";
-import type { CardCode, LegalAction, TableView } from "@/dev/view-types";
+import type {
+  CardCode,
+  LegalAction,
+  LogKind,
+  TableView,
+} from "@/dev/view-types";
 
 const YOU = 0;
 const MARA = 1;
@@ -19,6 +24,16 @@ const YOUR_ACTIONS: LegalAction[] = [
 type Step = { wait: number; apply: (view: TableView) => TableView };
 
 const total = (values: number[]) => values.reduce((a, b) => a + b, 0);
+
+const did =
+  (index: number, kind: LogKind, amount?: number) =>
+  (view: TableView): TableView => {
+    const log = view.log ?? [];
+    return {
+      ...view,
+      log: [...log, { id: log.length + 1, seat: index, kind, amount }],
+    };
+  };
 
 function seat(
   view: TableView,
@@ -83,7 +98,15 @@ export function dealView(): TableView {
       cards: i === YOU ? ["As", "Kd"] : ["??", "??"],
     })),
   };
-  const dealt = turn(bet(bet(fresh, THEO, 25), INES, 50), YOU);
+  const blinds = pipe(
+    (v: TableView) => seat(v, THEO, { blind: "small" }),
+    (v) => seat(v, INES, { blind: "big" }),
+    (v) => bet(v, THEO, 25),
+    did(THEO, "blind", 25),
+    (v) => bet(v, INES, 50),
+    did(INES, "blind", 50),
+  );
+  const dealt = turn(blinds(fresh), YOU);
   return {
     ...dealt,
     you: { ...dealt.you, hand: { rank: "high-card", cards: ["As", "Kd"] } },
@@ -95,60 +118,96 @@ const pipe =
   (view: TableView) =>
     fns.reduce((v, fn) => fn(v), view);
 
+const SHOWDOWN = (v: TableView): TableView => ({
+  ...v,
+  phase: "showdown",
+  seats: v.seats.map((s, i) =>
+    i === MARA ? { ...s, cards: ["Qh", "Jh"] } : s,
+  ),
+  result: {
+    winners: [
+      {
+        seat: MARA,
+        amount: total(v.pots),
+        hand: { rank: "pair", cards: ["Qh", "Qs", "Jh", "Td", "7h"] },
+      },
+    ],
+  },
+});
+
 export const HAND_STEPS: Step[] = [
   { wait: 3.4 + SHUFFLE_SECONDS, apply: (v) => v },
-  { wait: 1, apply: (v) => turn(bet(v, YOU, 50), MARA) },
-  { wait: 1, apply: (v) => turn(bet(v, MARA, 50), THEO) },
-  { wait: 1, apply: (v) => turn(bet(v, THEO, 50), INES) },
-  { wait: 1, apply: (v) => turn(v, null) },
+  {
+    wait: 1,
+    apply: pipe(
+      (v) => bet(v, YOU, 50),
+      did(YOU, "call", 50),
+      (v) => turn(v, MARA),
+    ),
+  },
+  {
+    wait: 1,
+    apply: pipe(
+      (v) => bet(v, MARA, 50),
+      did(MARA, "call", 50),
+      (v) => turn(v, THEO),
+    ),
+  },
+  {
+    wait: 1,
+    apply: pipe(
+      (v) => bet(v, THEO, 50),
+      did(THEO, "call", 50),
+      (v) => turn(v, INES),
+    ),
+  },
+  { wait: 1, apply: pipe(did(INES, "check"), (v) => turn(v, null)) },
   { wait: 1.1, apply: collect },
   { wait: 1.4, apply: pipe(street("flop", 3), (v) => turn(v, THEO)) },
-  { wait: 1, apply: (v) => turn(v, YOU) },
-  { wait: 1, apply: (v) => turn(bet(v, YOU, 100), MARA) },
+  {
+    wait: 1,
+    apply: pipe(did(THEO, "check"), did(INES, "check"), (v) => turn(v, YOU)),
+  },
+  {
+    wait: 1,
+    apply: pipe(
+      (v) => bet(v, YOU, 100),
+      did(YOU, "bet", 100),
+      (v) => turn(v, MARA),
+    ),
+  },
   {
     wait: 1,
     apply: pipe(
       (v) => bet(v, MARA, 100),
+      did(MARA, "call", 100),
       (v) => seat(v, THEO, { status: "folded" }),
+      did(THEO, "fold"),
       (v) => seat(v, INES, { status: "folded" }),
+      did(INES, "fold"),
       (v) => turn(v, null),
     ),
   },
   { wait: 1.1, apply: collect },
   { wait: 1.4, apply: pipe(street("turn", 4), (v) => turn(v, YOU)) },
-  { wait: 1, apply: (v) => turn(v, MARA) },
-  { wait: 1, apply: (v) => turn(v, null) },
+  { wait: 1, apply: pipe(did(YOU, "check"), (v) => turn(v, MARA)) },
+  { wait: 1, apply: pipe(did(MARA, "check"), (v) => turn(v, null)) },
   { wait: 1.4, apply: pipe(street("river", 5), (v) => turn(v, YOU)) },
-  { wait: 1, apply: (v) => turn(v, MARA) },
-  { wait: 1.2, apply: (v) => turn(v, null) },
-  {
-    wait: 1.8,
-    apply: pipe(
-      (v) => ({ ...v, phase: "showdown" }),
-      (v) => seat(v, MARA, { cards: ["Qh", "Jh"] }),
-      (v) => ({
-        ...v,
-        result: {
-          winners: [
-            {
-              seat: MARA,
-              amount: total(v.pots),
-              hand: {
-                rank: "pair" as const,
-                cards: ["Qh", "Qs", "Jh", "Td", "7h"] as CardCode[],
-              },
-            },
-          ],
-        },
-      }),
-    ),
-  },
+  { wait: 1, apply: pipe(did(YOU, "check"), (v) => turn(v, MARA)) },
+  { wait: 1.2, apply: pipe(did(MARA, "check"), (v) => turn(v, null)) },
+  { wait: 1.8, apply: SHOWDOWN },
   {
     wait: 2.6,
     apply: (v) =>
-      seat({ ...v, pots: [] }, MARA, {
-        stack: v.seats[MARA].stack + total(v.pots),
-      }),
+      did(
+        MARA,
+        "win",
+        total(v.pots),
+      )(
+        seat({ ...v, pots: [] }, MARA, {
+          stack: v.seats[MARA].stack + total(v.pots),
+        }),
+      ),
   },
 ];
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { ActionBar } from "@/components/table/action-bar";
+import { ActionLog } from "@/components/table/action-log";
 import { HandBadge } from "@/components/table/hand-badge";
 import { HandRankings } from "@/components/table/hand-rankings";
 import { Table } from "@/components/table/table";
@@ -19,6 +20,11 @@ export function ScriptedTable() {
         actions={view.you.legalActions}
         pot={view.pots.reduce((a, b) => a + b, 0)}
         onAction={() => {}}
+      />
+      <ActionLog
+        entries={view.log ?? []}
+        seats={view.seats}
+        you={view.you.seat}
       />
     </div>
   );
