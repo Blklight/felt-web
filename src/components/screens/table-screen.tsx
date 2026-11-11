@@ -2,15 +2,12 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ActionBar } from "@/components/table/action-bar";
-import { Table } from "@/components/table/table";
-import { pokerTable } from "@/dev/fixtures";
+import { ScriptedTable } from "@/components/screens/scripted-table";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
 
 export function TableScreen({ code }: { code: string | null }) {
   const t = useT();
-  const view = pokerTable(4);
 
   if (!code || !isValidRoomCode(code)) {
     return (
@@ -28,12 +25,7 @@ export function TableScreen({ code }: { code: string | null }) {
       <h1 className="tabular-nums text-muted-foreground text-sm">
         {t("table.room", { code })}
       </h1>
-      <Table view={view} animateDeal />
-      <ActionBar
-        actions={view.you.legalActions}
-        pot={view.pots.reduce((a, b) => a + b, 0)}
-        onAction={() => {}}
-      />
+      <ScriptedTable />
     </div>
   );
 }

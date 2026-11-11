@@ -1,6 +1,6 @@
 "use client";
 
-import type { Point } from "@/components/cards/card-motion";
+import type { RefObject } from "react";
 import { Hand } from "@/components/cards/hand";
 import type { SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
@@ -11,18 +11,11 @@ import { useCardLook } from "@/store/useCardSkinStore";
 type Props = {
   seat: SeatView;
   isYou?: boolean;
-  from?: Point;
-  dealDelay?: number;
-  dealStep?: number;
+  dealFrom?: RefObject<HTMLElement | null>;
+  dealDelays?: number[];
 };
 
-export function Seat({
-  seat,
-  isYou = false,
-  from,
-  dealDelay,
-  dealStep,
-}: Props) {
+export function Seat({ seat, isYou = false, dealFrom, dealDelays }: Props) {
   const t = useT();
   const format = useFormatNumber();
   const look = useCardLook(seat.skinId, seat.backId);
@@ -51,9 +44,8 @@ export function Seat({
         cards={seat.cards}
         skin={look.skin}
         back={look.back}
-        from={from}
-        dealDelay={dealDelay}
-        dealStep={dealStep}
+        dealFrom={dealFrom}
+        dealDelays={dealDelays}
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />

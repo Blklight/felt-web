@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import type { Ref } from "react";
 import { CardBack } from "@/components/cards/card-back";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
@@ -10,13 +11,16 @@ const LAYERS = [0, 1, 2, 3];
 export function Deck({
   shuffling = false,
   className,
+  ref,
 }: {
   shuffling?: boolean;
   className?: string;
+  ref?: Ref<HTMLDivElement>;
 }) {
   const t = useT();
   return (
     <div
+      ref={ref}
       role="img"
       aria-label={t("deck.label")}
       data-shuffling={shuffling ? "true" : undefined}
