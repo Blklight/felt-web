@@ -1,6 +1,12 @@
 import { GeistPixelCircle, GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Barlow,
+  Bungee_Shade,
+  Inter,
+  JetBrains_Mono,
+  Monoton,
+} from "next/font/google";
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,6 +17,24 @@ import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const barlow = Barlow({
+  weight: "700",
+  subsets: ["latin"],
+  variable: "--font-barlow",
+});
+
+const bungeeShade = Bungee_Shade({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bungee-shade",
+});
+
+const monoton = Monoton({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-monoton",
 });
 
 const jetBrainsMono = JetBrains_Mono({
@@ -33,6 +57,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         inter.variable,
         "font-mono",
         jetBrainsMono.variable,
+        barlow.variable,
+        bungeeShade.variable,
+        monoton.variable,
         GeistPixelSquare.variable,
         GeistPixelCircle.variable,
       )}

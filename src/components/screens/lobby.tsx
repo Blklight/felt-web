@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LobbyHero } from "@/components/screens/lobby-hero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,9 +34,12 @@ export function Lobby() {
 
   return (
     <div className="mx-auto grid w-full max-w-3xl gap-6 md:grid-cols-2">
-      <h1 className="font-pixel text-2xl md:col-span-2">{t("lobby.title")}</h1>
+      <LobbyHero />
 
-      <section className="flex flex-col gap-3 rounded-xl bg-black/40 p-4">
+      <section
+        id="create"
+        className="flex scroll-mt-4 flex-col gap-3 border border-border p-4"
+      >
         <h2 className="font-medium">{t("lobby.create")}</h2>
         <div
           className="flex gap-2"
@@ -85,7 +89,10 @@ export function Lobby() {
         </Button>
       </section>
 
-      <section className="flex flex-col gap-3 rounded-xl bg-black/40 p-4">
+      <section
+        id="join"
+        className="flex scroll-mt-4 flex-col gap-3 border border-border p-4"
+      >
         <h2 className="font-medium">{t("lobby.join")}</h2>
         <form onSubmit={join} className="flex flex-col gap-2">
           <Label htmlFor="room-code">{t("lobby.code")}</Label>
@@ -110,6 +117,12 @@ export function Lobby() {
         >
           {t("lobby.quick")}
         </Button>
+      </section>
+      <section className="flex flex-col gap-2 border border-border p-4 md:col-span-2">
+        <h2 className="font-medium">{t("lobby.recent")}</h2>
+        <p className="text-muted-foreground text-sm">
+          {t("lobby.recentEmpty")}
+        </p>
       </section>
     </div>
   );

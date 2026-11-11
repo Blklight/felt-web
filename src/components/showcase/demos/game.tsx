@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CardBack } from "@/components/cards/card-back";
 import { Hand } from "@/components/cards/hand";
 import { PlayingCard } from "@/components/cards/playing-card";
 import { Chip } from "@/components/chips/chip";
@@ -41,7 +42,8 @@ function PlayingCardDemo() {
       {ALL_CARDS.map((code) => (
         <PlayingCard key={code} code={code} />
       ))}
-      <PlayingCard code="??" />
+      <CardBack variant="ink" />
+      <CardBack variant="neon" />
     </div>
   );
 }

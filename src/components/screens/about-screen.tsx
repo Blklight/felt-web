@@ -9,7 +9,7 @@ export function AboutScreen() {
       <h1 className="font-pixel text-2xl">{t("about.title")}</h1>
       <h2 className="font-medium">{t("about.how")}</h2>
       <p>{t("about.howText")}</p>
-      <p className="rounded-md border border-neon-cyan/50 p-3 text-sm">
+      <p className="border border-border p-3 text-sm">
         {t("about.noRealMoney")}
       </p>
     </div>

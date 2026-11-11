@@ -25,7 +25,7 @@ export function TableScreen({ code }: { code: string | null }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h1 className="font-mono text-sm text-bone/80">
+      <h1 className="font-mono text-muted-foreground text-sm">
         {t("table.room", { code })}
       </h1>
       <Table view={view} />
