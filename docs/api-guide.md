@@ -69,7 +69,7 @@ Validação (a mesma da UI, que só antecipa o erro; quem decide é o servidor):
 
 Onde o front guarda o token: no `localStorage`, em um store persistido (ver a seção 8).
 
-**Créditos.** `STARTING_CREDITS = 5000`. Recarga diária: uma vez por dia (dia UTC), se o saldo estiver abaixo de 2.500, ele **volta para 2.500** (`balance = max(balance, 2500)`). Quem tem mais que isso não ganha nada. A conta guarda `refills` (quantas recargas) e `lastRefillDay` (`"2026-11-11"`). A recarga acontece no `GET /v1/me` e entra no ledger com `reason: "refill"` e `ref` = `refill:<dia>`, o que a torna idempotente. Ver a seção 8.
+**Créditos.** `STARTING_CREDITS = 5000`. Recarga diária: uma vez por dia (dia UTC), se o saldo estiver abaixo de 5.000, ele **ganha até 2.500, sem passar de 5.000** (`balance = min(balance + 2500, 5000)`). Quem tem 5.000 ou mais não ganha nada. A conta guarda `refills` (quantas recargas) e `lastRefillDay` (`"2026-11-11"`). A recarga acontece no `GET /v1/me` e entra no ledger com `reason: "refill"` e `ref` = `refill:<dia>`, o que a torna idempotente. Ver a seção 8.
 
 ### 2.2 Salas
 
@@ -297,7 +297,7 @@ type LogEntry = {
 
 Aprovadas: `handId` no `view`, `boardSkin: "creator" | "draw"` na criação da sala e `secondsLeft` relativo ao envio.
 
-1. **Créditos: 5.000 iniciais e recarga diária que completa até 2.500.** Somar 2.500 todo dia (sem condição) faz o saldo só crescer para quem entra todo dia, e isso estraga um ranking futuro (ganha quem loga mais, não quem joga melhor). Completar até 2.500 resolve o caso que importa, a pessoa que perdeu tudo continuar jogando, e 2.500 cobre o buy-in mínimo dos dois jogos (1.000 no poker 25/50, 200 no blackjack). Os 5.000 iniciais deixam a pessoa entrar uma vez com o buy-in máximo do poker.
+1. **Créditos: 5.000 iniciais e recarga diária de até 2.500, com teto de 5.000.** Quem está abaixo de 5.000 recebe até 2.500 por dia, sem passar de 5.000: com 0 vai a 2.500, com 1.000 vai a 3.500, com 4.900 vai a 5.000. O teto impede que a recarga leve alguém acima do valor inicial, então o saldo só cresce além de 5.000 jogando, o que mantém um ranking futuro justo. 2.500 cobre o buy-in mínimo dos dois jogos (1.000 no poker 25/50, 200 no blackjack). Quem controla o dia e o teto é o servidor; no navegador bastaria mudar o relógio.
 
 2. **Token no `localStorage`, sem a lib `idb`.** IndexedDB não protege mais que o `localStorage`: os dois são lidos por qualquer script que rode na página, então o que protege o token é não ter XSS. Para isso: React escapando todo texto (o nome do jogador nunca vira HTML), uma Content Security Policy no Pages e o token nunca na URL nem em log. IndexedDB só passa a valer a pena se o front guardar dados maiores (histórico de mãos offline, por exemplo); aí entra o `idb`.
 
