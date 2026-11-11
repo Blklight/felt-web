@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SHUFFLE_SECONDS } from "@/components/cards/deck";
 import { pokerTable } from "@/dev/fixtures";
 import type { CardCode, LegalAction, TableView } from "@/dev/view-types";
 
@@ -87,7 +88,7 @@ const pipe =
     fns.reduce((v, fn) => fn(v), view);
 
 export const HAND_STEPS: Step[] = [
-  { wait: 3.4, apply: (v) => v },
+  { wait: 3.4 + SHUFFLE_SECONDS, apply: (v) => v },
   { wait: 1, apply: (v) => turn(bet(v, YOU, 50), MARA) },
   { wait: 1, apply: (v) => turn(bet(v, MARA, 50), THEO) },
   { wait: 1, apply: (v) => turn(bet(v, THEO, 50), INES) },
