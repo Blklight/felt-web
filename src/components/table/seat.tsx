@@ -2,6 +2,7 @@
 
 import type { RefObject } from "react";
 import { Hand } from "@/components/cards/hand";
+import { PlayerAvatar } from "@/components/player-avatar";
 import type { CardCode, SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
@@ -107,10 +108,11 @@ export function Seat({
         )}
       >
         <p
-          className="truncate font-semibold text-[11px] leading-tight"
+          className="flex items-center justify-center gap-1 truncate font-semibold text-[11px] leading-tight"
           title={seat.name}
         >
-          {seat.name}
+          <PlayerAvatar id={seat.avatarId} className="size-3.5" />
+          <span className="truncate">{seat.name}</span>
         </p>
         <p className="tabular-nums text-[11px] text-bone/80 leading-tight">
           {format(seat.stack)}

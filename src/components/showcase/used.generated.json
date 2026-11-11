@@ -82,13 +82,17 @@
     "washi-tape"
   ],
   "used": [
+    "alert-dialog",
     "animated-theme-toggler",
     "button",
+    "dialog",
     "dropdown-menu",
     "input",
     "label",
+    "sheet",
     "slider",
     "sonner",
+    "spinner",
     "switch",
     "tooltip"
   ]

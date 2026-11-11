@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LobbyHero } from "@/components/screens/lobby-hero";
@@ -8,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
+import { useHydrated } from "@/hooks/useHydrated";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
+import { useRecentTablesStore } from "@/store/useRecentTablesStore";
 
 const DEMO_CODE = "KQ7XZ";
 const BLINDS = ["10/20", "25/50", "50/100"] as const;
@@ -21,6 +24,10 @@ export function Lobby() {
   const [blinds, setBlinds] = useState<(typeof BLINDS)[number]>("25/50");
   const [code, setCode] = useState("");
   const [invalid, setInvalid] = useState(false);
+  const hydrated = useHydrated();
+  const storedRecent = useRecentTablesStore((state) => state.tables);
+  const clearRecent = useRecentTablesStore((state) => state.clear);
+  const recent = hydrated ? storedRecent : [];
   const [pending, setPending] = useState<"create" | "join" | null>(null);
   const go = (kind: "create" | "join", url: string) => {
     setPending(kind);
@@ -133,10 +140,35 @@ export function Lobby() {
         </Button>
       </section>
       <section className="flex flex-col gap-2 border border-border p-4 md:col-span-2">
-        <h2 className="font-medium">{t("lobby.recent")}</h2>
-        <p className="text-muted-foreground text-sm">
-          {t("lobby.recentEmpty")}
-        </p>
+        <div className="flex items-center justify-between">
+          <h2 className="font-medium">{t("lobby.recent")}</h2>
+          {recent.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clearRecent}>
+              {t("lobby.clearRecent")}
+            </Button>
+          )}
+        </div>
+        {recent.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            {t("lobby.recentEmpty")}
+          </p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {recent.map((table) => (
+              <li key={table.code}>
+                <Link
+                  href={`/table?code=${table.code}&game=${table.game}`}
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+                >
+                  <span className="font-mono font-semibold">{table.code}</span>
+                  <span className="text-muted-foreground">
+                    {t(`game.${table.game}`)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
