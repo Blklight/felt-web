@@ -6,6 +6,7 @@ import { LobbyHero } from "@/components/screens/lobby-hero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
@@ -20,6 +21,11 @@ export function Lobby() {
   const [blinds, setBlinds] = useState<(typeof BLINDS)[number]>("25/50");
   const [code, setCode] = useState("");
   const [invalid, setInvalid] = useState(false);
+  const [pending, setPending] = useState<"create" | "join" | null>(null);
+  const go = (kind: "create" | "join", url: string) => {
+    setPending(kind);
+    router.push(url);
+  };
 
   const join = (event: React.FormEvent) => {
     event.preventDefault();
@@ -29,7 +35,7 @@ export function Lobby() {
       return;
     }
     setInvalid(false);
-    router.push(`/table?code=${normalized}`);
+    go("join", `/table?code=${normalized}`);
   };
 
   return (
@@ -85,9 +91,11 @@ export function Lobby() {
           </>
         )}
         <Button
-          onClick={() => router.push(`/table?code=${DEMO_CODE}&game=${game}`)}
+          disabled={pending !== null}
+          onClick={() => go("create", `/table?code=${DEMO_CODE}&game=${game}`)}
         >
-          {t("lobby.createButton")}
+          {pending === "create" && <Spinner aria-hidden="true" />}
+          {pending === "create" ? t("lobby.creating") : t("lobby.createButton")}
         </Button>
       </section>
 
@@ -111,11 +119,15 @@ export function Lobby() {
               {t("lobby.invalidCode")}
             </p>
           )}
-          <Button type="submit">{t("lobby.joinButton")}</Button>
+          <Button type="submit" disabled={pending !== null}>
+            {pending === "join" && <Spinner aria-hidden="true" />}
+            {pending === "join" ? t("lobby.joining") : t("lobby.joinButton")}
+          </Button>
         </form>
         <Button
           variant="outline"
-          onClick={() => router.push(`/table?code=${DEMO_CODE}`)}
+          disabled={pending !== null}
+          onClick={() => go("join", `/table?code=${DEMO_CODE}`)}
         >
           {t("lobby.quick")}
         </Button>

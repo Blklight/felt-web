@@ -4,10 +4,15 @@ import { useState } from "react";
 import { ActionBar } from "@/components/table/action-bar";
 import { ActionLog } from "@/components/table/action-log";
 import { BuyInDialog } from "@/components/table/buy-in-dialog";
+import {
+  ConnectionBanner,
+  useOnlineWatcher,
+} from "@/components/table/connection-banner";
 import { HandBadge } from "@/components/table/hand-badge";
 import { HandRankings } from "@/components/table/hand-rankings";
 import { LeaveButton } from "@/components/table/leave-button";
 import { Table } from "@/components/table/table";
+import { TableSkeleton } from "@/components/table/table-skeleton";
 import {
   BLACKJACK_BUY_IN,
   blackjackWatchingView,
@@ -16,6 +21,7 @@ import {
 import { BUY_IN, useHandScript, watchingView } from "@/dev/use-hand-script";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
+import { useConnectionStore } from "@/store/useConnectionStore";
 
 const START_BALANCE = 2500;
 
@@ -31,10 +37,17 @@ export function ScriptedTable({
   const [balance, setBalance] = useState(START_BALANCE);
   const [buyIn, setBuyIn] = useState<number | null>(null);
   const [picking, setPicking] = useState<number | null>(null);
+  const status = useConnectionStore((state) => state.status);
+  useOnlineWatcher();
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {buyIn === null ? (
+      <ConnectionBanner
+        onRetry={() => useConnectionStore.setState({ status: "connecting" })}
+      />
+      {status === "connecting" ? (
+        <TableSkeleton />
+      ) : buyIn === null ? (
         <>
           <p className="text-muted-foreground text-sm">
             {t("table.spectating")}
@@ -88,6 +101,7 @@ function Playing({
 }
 
 function BlackjackPlaying({ buyIn, onLeave }: PlayingProps) {
+  const connected = useConnectionStore((state) => state.status === "open");
   const { view, dealKey, act } = useBlackjackScript(buyIn);
   const stack = view.seats.find((s) => s.seat === view.you.seat)?.stack ?? 0;
   return (
@@ -102,6 +116,7 @@ function BlackjackPlaying({ buyIn, onLeave }: PlayingProps) {
         mode="chips"
         defaultOpen={view.phase === "betting"}
         onAction={act}
+        disabled={!connected}
       />
       <ActionLog
         entries={view.log ?? []}
@@ -113,6 +128,7 @@ function BlackjackPlaying({ buyIn, onLeave }: PlayingProps) {
 }
 
 function PokerPlaying({ buyIn, onLeave }: PlayingProps) {
+  const connected = useConnectionStore((state) => state.status === "open");
   const { view, hand } = useHandScript(buyIn);
   const stack = view.seats.find((s) => s.seat === view.you.seat)?.stack ?? 0;
   return (
@@ -127,6 +143,7 @@ function PokerPlaying({ buyIn, onLeave }: PlayingProps) {
         actions={view.you.legalActions}
         pot={view.pots.reduce((a, b) => a + b, 0)}
         onAction={() => {}}
+        disabled={!connected}
       />
       <ActionLog
         entries={view.log ?? []}

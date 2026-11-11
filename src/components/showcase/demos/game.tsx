@@ -12,6 +12,7 @@ import {
 import { Chip } from "@/components/chips/chip";
 import { ChipStack } from "@/components/chips/chip-stack";
 import { AnimationsDemo } from "@/components/showcase/demos/animations";
+import { ConnectionDemo } from "@/components/showcase/demos/connection";
 import type { ShowcaseCategory } from "@/components/showcase/types";
 import { ActionBar } from "@/components/table/action-bar";
 import { Seat } from "@/components/table/seat";
@@ -219,5 +220,6 @@ export const gameCategory: ShowcaseCategory = {
     { slug: "action-bar", name: "Action bar", demo: ActionBarDemo },
     { slug: "card-skins", name: "Card skins", demo: CardSkinsDemo },
     { slug: "animations", name: "Animations", demo: AnimationsDemo },
+    { slug: "connection", name: "Connection and errors", demo: ConnectionDemo },
   ],
 };
