@@ -38,7 +38,7 @@ export function TableCard({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const [landed, setLanded] = useState(!dealFrom);
+  const [landed, setLanded] = useState(!dealFrom || Boolean(reduce));
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: the flight runs once, when the card is dealt
   useLayoutEffect(() => {
