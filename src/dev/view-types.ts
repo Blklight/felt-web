@@ -32,6 +32,22 @@ export type LegalAction = {
   amount?: number;
 };
 
+export type HandRank =
+  | "royal-flush"
+  | "straight-flush"
+  | "four-of-a-kind"
+  | "full-house"
+  | "flush"
+  | "straight"
+  | "three-of-a-kind"
+  | "two-pair"
+  | "pair"
+  | "high-card";
+
+export type HandInfo = { rank: HandRank; cards: CardCode[] };
+
+export type Winner = { seat: number; amount: number; hand?: HandInfo };
+
 export type SeatView = {
   seat: number;
   name: string;
@@ -55,5 +71,6 @@ export type TableView = {
   boardBackId: CardBackVariant;
   pots: number[];
   secondsLeft: number | null;
-  you: { seat: number | null; legalActions: LegalAction[] };
+  you: { seat: number | null; legalActions: LegalAction[]; hand?: HandInfo };
+  result?: { winners: Winner[] };
 };

@@ -12,6 +12,7 @@ type Props = {
   faceDown?: boolean;
   dealFrom?: RefObject<HTMLElement | null>;
   dealDelays?: number[];
+  highlight?: (code: CardCode) => "win" | "dim" | undefined;
 };
 
 const CARD = "w-10 sm:w-16";
@@ -24,6 +25,7 @@ export function Board({
   faceDown = false,
   dealFrom,
   dealDelays,
+  highlight,
 }: Props) {
   const spots = Array.from(
     { length: slots },
@@ -46,6 +48,7 @@ export function Board({
             // biome-ignore lint/suspicious/noArrayIndexKey: a spot keeps its card so the flop, turn and river turn over in place
             key={k}
             code={code}
+            highlight={highlight?.(code)}
             skin={skin}
             back={back}
             dealFrom={dealFrom}

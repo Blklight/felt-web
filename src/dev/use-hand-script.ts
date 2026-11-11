@@ -43,7 +43,11 @@ function turn(view: TableView, index: number | null): TableView {
   return {
     ...view,
     seats: view.seats.map((s, i) => ({ ...s, isTurn: i === index })),
-    you: { seat: YOU, legalActions: index === YOU ? YOUR_ACTIONS : [] },
+    you: {
+      ...view.you,
+      seat: YOU,
+      legalActions: index === YOU ? YOUR_ACTIONS : [],
+    },
     secondsLeft: index === null ? null : 15,
   };
 }
@@ -79,7 +83,11 @@ export function dealView(): TableView {
       cards: i === YOU ? ["As", "Kd"] : ["??", "??"],
     })),
   };
-  return turn(bet(bet(fresh, THEO, 25), INES, 50), YOU);
+  const dealt = turn(bet(bet(fresh, THEO, 25), INES, 50), YOU);
+  return {
+    ...dealt,
+    you: { ...dealt.you, hand: { rank: "high-card", cards: ["As", "Kd"] } },
+  };
 }
 
 const pipe =
@@ -118,6 +126,21 @@ export const HAND_STEPS: Step[] = [
     apply: pipe(
       (v) => ({ ...v, phase: "showdown" }),
       (v) => seat(v, MARA, { cards: ["Qh", "Jh"] }),
+      (v) => ({
+        ...v,
+        result: {
+          winners: [
+            {
+              seat: MARA,
+              amount: total(v.pots),
+              hand: {
+                rank: "pair" as const,
+                cards: ["Qh", "Qs", "Jh", "Td", "7h"] as CardCode[],
+              },
+            },
+          ],
+        },
+      }),
     ),
   },
   {

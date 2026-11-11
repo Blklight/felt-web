@@ -17,7 +17,8 @@ import {
   tableShape,
 } from "@/components/table/seat-positions";
 import { Timer } from "@/components/table/timer";
-import type { TableView } from "@/dev/view-types";
+import type { CardCode, TableView } from "@/dev/view-types";
+import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardLook } from "@/store/useCardSkinStore";
@@ -113,6 +114,22 @@ const percent = (p: Point) => ({ left: `${p.x}%`, top: `${p.y}%` });
 
 export function Table({ view, animateDeal = false }: Props) {
   const t = useT();
+  const format = useFormatNumber();
+  const winners = view.result?.winners ?? [];
+  const winningCards = new Set(winners.flatMap((w) => w.hand?.cards ?? []));
+  const highlight = winners.length
+    ? (code: CardCode) =>
+        winningCards.has(code) ? ("win" as const) : ("dim" as const)
+    : undefined;
+  const announcement = winners
+    .map((w) => {
+      const name = view.seats.find((s) => s.seat === w.seat)?.name ?? "";
+      const amount = format(w.amount);
+      return w.hand
+        ? t("result.wins", { name, amount, hand: t(`hand.${w.hand.rank}`) })
+        : t("result.winsNoHand", { name, amount });
+    })
+    .join(" · ");
   const look = useCardLook(view.boardSkinId, view.boardBackId);
   const { shape, slotOf, betOf } = layout(view);
   const deck = deckPosition(shape, view.seats.length);
@@ -171,6 +188,7 @@ export function Table({ view, animateDeal = false }: Props) {
                 skin={look.skin}
                 back={look.back}
                 faceDown
+                highlight={highlight}
                 dealFrom={dealFrom}
                 dealDelays={schedule.board}
               />
@@ -184,7 +202,13 @@ export function Table({ view, animateDeal = false }: Props) {
               dealDelays={schedule.board}
             />
           )}
-          <Timer secondsLeft={view.secondsLeft} />
+          {announcement ? (
+            <output className="rounded-full border border-neon-cyan bg-card-ink/80 px-3 py-1 font-semibold text-neon-cyan text-sm">
+              {announcement}
+            </output>
+          ) : (
+            <Timer secondsLeft={view.secondsLeft} />
+          )}
         </div>
         {view.seats.map((seat, i) => {
           if (seat.bet <= 0) return null;
@@ -211,6 +235,8 @@ export function Table({ view, animateDeal = false }: Props) {
               isYou={view.you.seat === seat.seat}
               dealFrom={dealFrom}
               dealDelays={schedule.seats[i]}
+              highlight={highlight}
+              winner={winners.some((w) => w.seat === seat.seat)}
             />
           </div>
         ))}

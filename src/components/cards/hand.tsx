@@ -10,6 +10,7 @@ type Props = {
   back?: CardBackVariant;
   dealFrom?: RefObject<HTMLElement | null>;
   dealDelays?: number[];
+  highlight?: (code: CardCode) => "win" | "dim" | undefined;
   className?: string;
   cardClassName?: string;
 };
@@ -20,6 +21,7 @@ export function Hand({
   back,
   dealFrom,
   dealDelays,
+  highlight,
   className,
   cardClassName,
 }: Props) {
@@ -30,6 +32,7 @@ export function Hand({
           // biome-ignore lint/suspicious/noArrayIndexKey: a slot keeps its card so a reveal turns it over in place
           key={i}
           code={code}
+          highlight={highlight?.(code)}
           skin={skin}
           back={back}
           dealFrom={dealFrom}
