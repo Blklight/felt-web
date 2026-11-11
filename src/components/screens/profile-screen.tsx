@@ -101,7 +101,9 @@ function NameField() {
   };
   return (
     <form onSubmit={save} className="flex flex-col gap-2">
-      <Label htmlFor="profile-name">{t("profile.name")}</Label>
+      <Label htmlFor="profile-name" className="sr-only">
+        {t("profile.name")}
+      </Label>
       <div className="flex gap-2">
         <Input
           id="profile-name"

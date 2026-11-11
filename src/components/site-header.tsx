@@ -10,6 +10,12 @@ export function SiteHeader() {
   const t = useT();
   return (
     <header className="flex items-center justify-between gap-4 border-border border-b px-4 py-2">
+      <a
+        href="#content"
+        className="sr-only rounded-md bg-neon-violet px-3 py-1 font-semibold text-white focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+      >
+        {t("nav.skip")}
+      </a>
       <Link href="/" className="font-bungee text-xl">
         felt
       </Link>

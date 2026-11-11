@@ -69,7 +69,14 @@ function layout(view: TableView) {
   const focus: Point =
     shape === "halfmoon" ? { x: 50, y: 40 } : { x: 50, y: 50 };
   const slotOf = (i: number) => slots[(i - viewer + anchor + count) % count];
-  const betOf = (i: number) => toward(slotOf(i), focus, 0.32);
+  // Side seats sit level with the board, so their bets go just below the seat instead of toward the middle.
+  const betOf = (i: number) => {
+    const slot = slotOf(i);
+    if (shape !== "halfmoon" && Math.abs(slot.y - 50) < 15) {
+      return { x: slot.x + (50 - slot.x) * 0.16, y: slot.y + 16 };
+    }
+    return toward(slot, focus, shape === "halfmoon" ? 0.5 : 0.32);
+  };
   return { shape, slotOf, betOf };
 }
 
@@ -230,18 +237,21 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
                 dealFrom={dealFrom}
                 dealDelays={schedule.board}
               />
-              {view.dealerTotal !== undefined && (
-                <span className="rounded-full bg-card-ink/80 px-2 py-0.5 font-semibold text-bone text-xs tabular-nums">
-                  {t("dealer.total", { total: view.dealerTotal })}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {view.dealerTotal !== undefined && (
+                  <span className="rounded-full bg-card-ink/80 px-2 py-0.5 font-semibold text-bone text-xs tabular-nums">
+                    {t("dealer.total", { total: view.dealerTotal })}
+                  </span>
+                )}
+                <Timer secondsLeft={view.secondsLeft} />
+              </div>
             </div>
           )}
           {announcement ? (
             <output className="rounded-full border border-neon-cyan bg-card-ink/80 px-3 py-1 font-semibold text-neon-cyan text-sm">
               {announcement}
             </output>
-          ) : view.phase === "waiting" ? null : (
+          ) : view.phase === "waiting" || view.game === "blackjack" ? null : (
             <Timer secondsLeft={view.secondsLeft} />
           )}
         </div>

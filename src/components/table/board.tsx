@@ -15,7 +15,7 @@ type Props = {
   highlight?: (code: CardCode) => "win" | "dim" | undefined;
 };
 
-const CARD = "w-10 sm:w-16";
+const CARD = "w-8 sm:w-16";
 
 export function Board({
   cards,

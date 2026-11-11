@@ -5,7 +5,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <LayoutBase>
       <SiteHeader />
-      <div className="flex grow flex-col p-4">{children}</div>
+      <div
+        id="content"
+        tabIndex={-1}
+        className="flex grow flex-col p-4 outline-none"
+      >
+        {children}
+      </div>
     </LayoutBase>
   );
 }
