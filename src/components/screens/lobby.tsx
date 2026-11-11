@@ -1,0 +1,116 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useT } from "@/i18n/use-t";
+import { isValidRoomCode } from "@/lib/room-code";
+
+const DEMO_CODE = "KQ7XZ";
+const BLINDS = ["10/20", "25/50", "50/100"] as const;
+
+export function Lobby() {
+  const t = useT();
+  const router = useRouter();
+  const [game, setGame] = useState<"blackjack" | "poker">("poker");
+  const [blinds, setBlinds] = useState<(typeof BLINDS)[number]>("25/50");
+  const [code, setCode] = useState("");
+  const [invalid, setInvalid] = useState(false);
+
+  const join = (event: React.FormEvent) => {
+    event.preventDefault();
+    const normalized = code.trim().toUpperCase();
+    if (!isValidRoomCode(normalized)) {
+      setInvalid(true);
+      return;
+    }
+    setInvalid(false);
+    router.push(`/table?code=${normalized}`);
+  };
+
+  return (
+    <div className="mx-auto grid w-full max-w-3xl gap-6 md:grid-cols-2">
+      <h1 className="font-pixel text-2xl md:col-span-2">{t("lobby.title")}</h1>
+
+      <section className="flex flex-col gap-3 rounded-xl bg-black/40 p-4">
+        <h2 className="font-medium">{t("lobby.create")}</h2>
+        <div
+          className="flex gap-2"
+          role="radiogroup"
+          aria-label={t("lobby.game")}
+        >
+          {(["blackjack", "poker"] as const).map((g) => (
+            <Button
+              key={g}
+              role="radio"
+              aria-checked={game === g}
+              variant={game === g ? "default" : "outline"}
+              onClick={() => setGame(g)}
+            >
+              {t(`game.${g}`)}
+            </Button>
+          ))}
+        </div>
+        {game === "poker" && (
+          <>
+            <div
+              className="flex items-center gap-2"
+              role="radiogroup"
+              aria-label={t("lobby.blinds")}
+            >
+              {BLINDS.map((b) => (
+                <Button
+                  key={b}
+                  size="sm"
+                  role="radio"
+                  aria-checked={blinds === b}
+                  variant={blinds === b ? "default" : "outline"}
+                  onClick={() => setBlinds(b)}
+                >
+                  {b}
+                </Button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Switch id="cap-stacks" />
+              <Label htmlFor="cap-stacks">{t("lobby.capStacks")}</Label>
+            </div>
+          </>
+        )}
+        <Button onClick={() => router.push(`/table?code=${DEMO_CODE}`)}>
+          {t("lobby.createButton")}
+        </Button>
+      </section>
+
+      <section className="flex flex-col gap-3 rounded-xl bg-black/40 p-4">
+        <h2 className="font-medium">{t("lobby.join")}</h2>
+        <form onSubmit={join} className="flex flex-col gap-2">
+          <Label htmlFor="room-code">{t("lobby.code")}</Label>
+          <Input
+            id="room-code"
+            value={code}
+            maxLength={5}
+            autoComplete="off"
+            aria-invalid={invalid}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          {invalid && (
+            <p role="alert" className="text-destructive text-sm">
+              {t("lobby.invalidCode")}
+            </p>
+          )}
+          <Button type="submit">{t("lobby.joinButton")}</Button>
+        </form>
+        <Button
+          variant="outline"
+          onClick={() => router.push(`/table?code=${DEMO_CODE}`)}
+        >
+          {t("lobby.quick")}
+        </Button>
+      </section>
+    </div>
+  );
+}

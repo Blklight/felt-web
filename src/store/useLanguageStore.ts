@@ -1,15 +1,21 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import type { Language } from "@/i18n/dictionaries";
 
-export const useLanguageStore = create(
+type LanguageState = {
+  language: Language;
+  setLanguage: (language: Language) => void;
+};
+
+export const useLanguageStore = create<LanguageState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       language: "pt-br",
-      setLanguage: (language: string) => set({ language }),
+      setLanguage: (language) => set({ language }),
     }),
     {
       name: "lang-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

@@ -19,8 +19,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "tpl-ui",
-  description: "Front-end template",
+  title: "felt",
+  description: "Cards with friends. Fake credits, real fun.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
