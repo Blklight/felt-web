@@ -49,8 +49,11 @@ jobs:
           bun run test
 
       # Domínio próprio (public/CNAME → felt.blklight.dev): servido na raiz, sem basePath.
+      # Público (vai no bundle): o endereço do Worker da felt-server.
       - name: Build
         run: bun run build
+        env:
+          NEXT_PUBLIC_API_URL: https://felt-server.blklight.workers.dev
 
       - name: Disable Jekyll
         run: touch out/.nojekyll
