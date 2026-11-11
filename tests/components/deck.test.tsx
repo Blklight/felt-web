@@ -1,12 +1,14 @@
 import { act, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
-import { Deck } from "@/components/cards/deck";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Deck, SHUFFLE_SECONDS } from "@/components/cards/deck";
 import { ChipFlight } from "@/components/chips/chip-flight";
 import {
   deckPosition,
   seatPositions,
   tableShape,
 } from "@/components/table/seat-positions";
+import { Table } from "@/components/table/table";
+import { pokerTable } from "@/dev/fixtures";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
 describe("Deck", () => {
@@ -27,6 +29,35 @@ describe("Deck", () => {
     expect(container.firstElementChild).toHaveAttribute(
       "data-shuffling",
       "true",
+    );
+  });
+});
+
+describe("Deck riffle", () => {
+  it("has enough cards to split into two halves", () => {
+    const { container } = render(<Deck />);
+    expect(
+      container.querySelectorAll("[data-back]").length,
+    ).toBeGreaterThanOrEqual(8);
+  });
+});
+
+describe("Table shuffles before dealing", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it("shuffles the deck first and stops once the deal starts", () => {
+    render(<Table view={pokerTable(4)} animateDeal />);
+    const deck = screen.getByRole("img", { name: "Deck" });
+    expect(deck).toHaveAttribute("data-shuffling", "true");
+    act(() => vi.advanceTimersByTime(SHUFFLE_SECONDS * 1000 + 50));
+    expect(deck).not.toHaveAttribute("data-shuffling");
+  });
+
+  it("does not shuffle when the table is not dealing", () => {
+    render(<Table view={pokerTable(4)} />);
+    expect(screen.getByRole("img", { name: "Deck" })).not.toHaveAttribute(
+      "data-shuffling",
     );
   });
 });

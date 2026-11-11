@@ -46,6 +46,19 @@ describe("Seat", () => {
 });
 
 describe("Pot", () => {
+  it("shows the chips of the pot next to its value", () => {
+    act(() => useLanguageStore.setState({ language: "en" }));
+    render(<Pot pots={[1200]} />);
+    expect(screen.getByText("1,200")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "1000" })).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: "100" })).toHaveLength(2);
+  });
+
+  it("shows nothing for an empty pot", () => {
+    const { container } = render(<Pot pots={[]} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it("shows the summed pot", () => {
     act(() => useLanguageStore.setState({ language: "en" }));
     render(<Pot pots={[300, 900]} />);

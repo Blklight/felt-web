@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Deck } from "@/components/cards/deck";
+import { Deck, SHUFFLE_SECONDS } from "@/components/cards/deck";
 import { Hand } from "@/components/cards/hand";
 import { ChipFlight } from "@/components/chips/chip-flight";
 import { ChipStack } from "@/components/chips/chip-stack";
@@ -118,7 +118,18 @@ export function Table({ view, animateDeal = false }: Props) {
   const deck = deckPosition(shape, view.seats.length);
   const deckRef = useRef<HTMLDivElement>(null);
   const dealFrom = animateDeal ? deckRef : undefined;
-  const [schedule] = useState(() => dealSchedule(view, DEAL_STEP));
+  const [schedule] = useState(() => {
+    const plain = dealSchedule(view, DEAL_STEP);
+    if (!animateDeal) return plain;
+    const after = (delays: number[]) => delays.map((d) => d + SHUFFLE_SECONDS);
+    return { seats: plain.seats.map(after), board: after(plain.board) };
+  });
+  const [shuffling, setShuffling] = useState(animateDeal);
+  useEffect(() => {
+    if (!shuffling) return;
+    const id = setTimeout(() => setShuffling(false), SHUFFLE_SECONDS * 1000);
+    return () => clearTimeout(id);
+  }, [shuffling]);
 
   const previous = useRef(view);
   const ids = useRef(0);
@@ -144,7 +155,7 @@ export function Table({ view, animateDeal = false }: Props) {
           className="absolute -translate-x-1/2 -translate-y-1/2"
           style={percent(deck)}
         >
-          <Deck ref={deckRef} />
+          <Deck ref={deckRef} shuffling={shuffling} />
         </div>
         <div
           className={cn(
