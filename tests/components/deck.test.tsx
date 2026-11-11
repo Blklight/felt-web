@@ -1,9 +1,12 @@
 import { act, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Deck } from "@/components/cards/deck";
 import { Hand } from "@/components/cards/hand";
 import { ChipFlight } from "@/components/chips/chip-flight";
+import { Board } from "@/components/table/board";
 import { deckPosition } from "@/components/table/seat-positions";
+import { Table } from "@/components/table/table";
+import { pokerTable } from "@/dev/fixtures";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
 describe("Deck", () => {
@@ -46,7 +49,7 @@ describe("Hand dealing from a point", () => {
     const { container } = render(
       <Hand cards={["As", "Kd"]} from={{ x: 120, y: -40 }} />,
     );
-    const first = container.querySelector("[data-skin]") as HTMLElement;
+    const first = container.querySelector("[data-back]") as HTMLElement;
     expect(first.style.transform).toContain("120px");
   });
 });
@@ -68,6 +71,74 @@ describe("cards are visible from the first frame", () => {
     for (const card of container.querySelectorAll("[data-skin], [data-back]")) {
       expect((card as HTMLElement).style.opacity).not.toBe("0");
     }
+  });
+});
+
+describe("dealing sequence", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    act(() => useLanguageStore.setState({ language: "en" }));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("flies cards face down, then turns the ones that have a value", () => {
+    render(<Hand cards={["As", "??"]} from={{ x: 80, y: -30 }} />);
+    expect(
+      screen.queryByRole("img", { name: "Ace of spades" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: "Face-down card" })).toHaveLength(
+      2,
+    );
+    act(() => vi.advanceTimersByTime(3000));
+    expect(
+      screen.getByRole("img", { name: "Ace of spades" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: "Face-down card" })).toHaveLength(
+      1,
+    );
+  });
+
+  it("never rotates a dealt card sideways", () => {
+    const { container } = render(
+      <Hand cards={["??"]} from={{ x: 80, y: -30 }} />,
+    );
+    const card = container.querySelector("[data-back]") as HTMLElement;
+    expect(card.style.transform).not.toMatch(/rotate\(-?[1-9]/);
+  });
+
+  it("deals the board face down too, then turns it", () => {
+    render(
+      <Board
+        cards={["7h", "Td", "2c"]}
+        from={{ x: 0, y: -60 }}
+        dealDelay={1}
+      />,
+    );
+    expect(
+      screen.queryByRole("img", { name: "Seven of hearts" }),
+    ).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(5000));
+    expect(
+      screen.getByRole("img", { name: "Seven of hearts" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the player's own cards face down until they land when the table deals", () => {
+    render(<Table view={pokerTable(4)} animateDeal />);
+    expect(
+      screen.queryByRole("img", { name: "Ace of spades" }),
+    ).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(6000));
+    expect(
+      screen.getByRole("img", { name: "Ace of spades" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not deal unless asked: face-up cards are there from the start", () => {
+    render(<Table view={pokerTable(4)} />);
+    expect(
+      screen.getByRole("img", { name: "Ace of spades" }),
+    ).toBeInTheDocument();
   });
 });
 

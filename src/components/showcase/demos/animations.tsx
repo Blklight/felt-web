@@ -72,11 +72,11 @@ function DealStage() {
     <Stage
       wide
       title="Deal from the deck"
-      hint="Hole cards fly from the deck to each seat; the board follows, flipping in."
+      hint="Cards leave the deck face down, one per player at a time; then the board. Cards with a value turn when they land."
       actions={replayButton(() => setRun((n) => n + 1))}
     >
       <div className="w-full">
-        <Table key={run} view={pokerTable(4)} />
+        <Table key={run} view={pokerTable(4)} animateDeal />
       </div>
     </Stage>
   );

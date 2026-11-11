@@ -34,11 +34,10 @@ export const fromPoint = <T extends Motion>(motion: T, from?: Point): T =>
           ...motion.initial,
           x: from.x,
           y: from.y,
-          rotate: -18,
           rotateY: 0,
-          scale: 0.7,
+          scale: 0.8,
         },
-        animate: { ...motion.animate, x: 0, rotate: 0, scale: 1 },
+        animate: { ...motion.animate, x: 0, scale: 1 },
         transition: { ...motion.transition, duration: 0.5 },
       }
     : motion;

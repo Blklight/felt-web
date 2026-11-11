@@ -20,7 +20,7 @@ import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 import { useCardLook } from "@/store/useCardSkinStore";
 
-type Props = { view: TableView };
+type Props = { view: TableView; animateDeal?: boolean };
 
 const BOX: Record<TableShape, string> = {
   chamfer: "aspect-square max-w-xl sm:aspect-[4/3]",
@@ -36,7 +36,7 @@ function toward(from: Point, to: Point, amount: number): Point {
   };
 }
 
-export function Table({ view }: Props) {
+export function Table({ view, animateDeal = false }: Props) {
   const t = useT();
   const [boxRef, bounds] = useMeasure();
   const width = bounds.width || 640;
@@ -52,10 +52,15 @@ export function Table({ view }: Props) {
   const focus: Point =
     shape === "halfmoon" ? { x: 50, y: 40 } : { x: 50, y: 50 };
   const deck = deckPosition(shape);
-  const offsetFromDeck = (at: Point): Point => ({
-    x: ((deck.x - at.x) / 100) * width,
-    y: ((deck.y - at.y) / 100) * height,
-  });
+  const offsetFromDeck = (at: Point): Point | undefined =>
+    animateDeal
+      ? {
+          x: ((deck.x - at.x) / 100) * width,
+          y: ((deck.y - at.y) / 100) * height,
+        }
+      : undefined;
+  const seatStep = 0.12;
+  const boardDelay = count * 2 * seatStep + 0.3;
 
   return (
     <div className="mx-auto w-full px-10 py-14 sm:px-8 sm:py-12">
@@ -86,7 +91,7 @@ export function Table({ view }: Props) {
                 cards={view.board}
                 skin={look.skin}
                 from={offsetFromDeck(focus)}
-                dealDelay={0.8}
+                dealDelay={boardDelay}
               />
             </>
           ) : (
@@ -95,7 +100,7 @@ export function Table({ view }: Props) {
               skin={look.skin}
               back={look.back}
               from={offsetFromDeck({ x: 50, y: 18 })}
-              dealDelay={0.3}
+              dealDelay={boardDelay}
             />
           )}
           <Timer secondsLeft={view.secondsLeft} />
@@ -127,7 +132,8 @@ export function Table({ view }: Props) {
                 seat={seat}
                 isYou={view.you.seat === seat.seat}
                 from={offsetFromDeck(at)}
-                dealDelay={i * 0.12}
+                dealDelay={i * seatStep}
+                dealStep={count * seatStep}
               />
             </div>
           );
