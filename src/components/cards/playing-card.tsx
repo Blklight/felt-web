@@ -1,7 +1,12 @@
 "use client";
 
 import { CardBack } from "@/components/cards/card-back";
-import { type CardSkin, faceColor, suitFill } from "@/components/cards/skins";
+import {
+  type CardSkin,
+  centerValue,
+  faceStyle,
+  suitFill,
+} from "@/components/cards/skins";
 import { SUIT_PATHS } from "@/components/cards/suits";
 import type { CardCode } from "@/dev/view-types";
 import { useT } from "@/i18n/use-t";
@@ -12,7 +17,6 @@ import { useCardSkinStore } from "@/store/useCardSkinStore";
 type Props = { code: CardCode; skin?: CardSkin; className?: string };
 
 const INDEX_FONT = "var(--font-barlow), sans-serif";
-const VALUE_FONT = "var(--font-bungee-shade), sans-serif";
 
 export function PlayingCard({ code, skin, className }: Props) {
   const t = useT();
@@ -28,6 +32,7 @@ export function PlayingCard({ code, skin, className }: Props) {
   });
   const rank = card.rank === "T" ? "10" : card.rank;
   const ten = rank === "10";
+  const center = centerValue(activeSkin);
 
   const corner = (rotated: boolean) => (
     <g transform={rotated ? "rotate(180 50 70)" : undefined}>
@@ -59,7 +64,7 @@ export function PlayingCard({ code, skin, className }: Props) {
   return (
     <div
       data-skin={activeSkin}
-      style={{ backgroundColor: faceColor(activeSkin) }}
+      style={faceStyle(activeSkin, card.suit)}
       className={cn(
         "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg shadow-md",
         className,
@@ -75,11 +80,11 @@ export function PlayingCard({ code, skin, className }: Props) {
         {corner(true)}
         <text
           x="48"
-          y={ten ? 84.3 : 90}
+          y={ten ? center.tenY : center.y}
           textAnchor="middle"
-          fontFamily={VALUE_FONT}
-          fontSize={ten ? 52 : 68}
-          letterSpacing={ten ? -4 : 0}
+          fontFamily={center.font}
+          fontSize={ten ? center.tenSize : center.size}
+          letterSpacing={ten ? center.tenSpacing : 0}
           fill={fill}
         >
           {rank}
