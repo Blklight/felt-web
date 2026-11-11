@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { ScriptedTable } from "@/components/screens/scripted-table";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
+import { useRecentTablesStore } from "@/store/useRecentTablesStore";
 
 export function TableScreen({
   code,
@@ -14,8 +16,13 @@ export function TableScreen({
   game?: "poker" | "blackjack";
 }) {
   const t = useT();
+  const valid = code !== null && isValidRoomCode(code);
+  const visit = useRecentTablesStore((state) => state.visit);
+  useEffect(() => {
+    if (valid && code) visit(code, game);
+  }, [valid, code, game, visit]);
 
-  if (!code || !isValidRoomCode(code)) {
+  if (!code || !valid) {
     return (
       <div className="m-auto flex flex-col items-center gap-3 text-center">
         <p>{t("table.noCode")}</p>
