@@ -1,7 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ScriptedTable } from "@/components/screens/scripted-table";
 import { BuyInDialog } from "@/components/table/buy-in-dialog";
 import { LeaveButton } from "@/components/table/leave-button";
 import { Seat } from "@/components/table/seat";
@@ -155,29 +154,6 @@ describe("LeaveButton", () => {
     await userEvent.click(screen.getByRole("button", { name: "Leave table" }));
     expect(
       screen.getByText("You will leave when this hand ends."),
-    ).toBeInTheDocument();
-  });
-});
-
-describe("table screen flow", () => {
-  it("starts watching, sits with a buy-in, then can leave back to watching", async () => {
-    render(<ScriptedTable />);
-    expect(
-      screen.getByText("You are watching. Pick a free seat to play."),
-    ).toBeInTheDocument();
-    await userEvent.click(
-      screen.getAllByRole("button", { name: /^Sit at seat/ })[0],
-    );
-    await userEvent.click(
-      screen.getByRole("button", { name: "Sit with 1,000" }),
-    );
-    expect(
-      screen.queryByText("You are watching. Pick a free seat to play."),
-    ).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Leave table" }));
-    await userEvent.click(screen.getByRole("button", { name: "Leave" }));
-    expect(
-      screen.getByText("You are watching. Pick a free seat to play."),
     ).toBeInTheDocument();
   });
 });

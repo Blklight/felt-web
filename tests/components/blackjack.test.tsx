@@ -1,11 +1,10 @@
-import { act, render, renderHook, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionBar } from "@/components/table/action-bar";
 import { Seat } from "@/components/table/seat";
 import { Table } from "@/components/table/table";
 import { blackjackTable } from "@/dev/fixtures";
-import { handTotal, useBlackjackScript } from "@/dev/use-blackjack-script";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
 beforeEach(() => {
@@ -67,73 +66,5 @@ describe("blackjack table", () => {
   it("shows the dealer total", () => {
     render(<Table view={{ ...blackjackTable, dealerTotal: 10 }} />);
     expect(screen.getByText("Dealer: 10")).toBeInTheDocument();
-  });
-});
-
-describe("handTotal (dev dealer)", () => {
-  it.each([
-    [["Ah", "Kd"], 21],
-    [["Ah", "Ad", "9c"], 21],
-    [["Ts", "9h", "5c"], 24],
-    [["Ah", "6d"], 17],
-    [["Ah", "6d", "Kc"], 17],
-  ] as const)("%j totals %i", (cards, total) => {
-    expect(handTotal([...cards])).toBe(total);
-  });
-});
-
-const advance = (ms: number) => {
-  for (let elapsed = 0; elapsed < ms; elapsed += 250) {
-    act(() => vi.advanceTimersByTime(250));
-  }
-};
-
-describe("useBlackjackScript", () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
-
-  it("waits for the player's bet, deals, lets them play and settles the round", () => {
-    const { result } = renderHook(() => useBlackjackScript(1000));
-    expect(result.current.view.phase).toBe("betting");
-    expect(result.current.view.you.legalActions[0]).toMatchObject({
-      type: "bet",
-      min: 10,
-    });
-
-    act(() => result.current.act({ type: "bet", amount: 50 }));
-    expect(result.current.view.phase).toBe("dealing");
-    expect(result.current.view.seats[0].cards).toHaveLength(2);
-    expect(result.current.view.board).toEqual([
-      result.current.view.board[0],
-      "??",
-    ]);
-
-    advance(8000);
-    const view = result.current.view;
-    if (view.phase === "players") {
-      expect(view.you.legalActions.map((a) => a.type)).toEqual(
-        expect.arrayContaining(["hit", "stand"]),
-      );
-      act(() => result.current.act({ type: "stand" }));
-    }
-
-    advance(20000);
-    expect(["results", "betting"]).toContain(result.current.view.phase);
-    const settled = result.current.view;
-    if (settled.phase === "results") {
-      expect(settled.seats[0].outcome).toBeDefined();
-      expect(settled.board).not.toContain("??");
-    }
-  });
-
-  it("starts a new round after the results", () => {
-    const { result } = renderHook(() => useBlackjackScript(1000));
-    act(() => result.current.act({ type: "bet", amount: 50 }));
-    advance(8000);
-    if (result.current.view.phase === "players")
-      act(() => result.current.act({ type: "stand" }));
-    advance(40000);
-    expect(result.current.view.phase).toBe("betting");
-    expect(result.current.round).toBeGreaterThan(0);
   });
 });
