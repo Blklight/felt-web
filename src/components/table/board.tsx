@@ -12,8 +12,14 @@ export function Board({ cards, slots = 5, skin }: Props) {
   );
   return (
     <div className="flex gap-1.5">
-      {keyedCards(cards).map(({ code, key }) => (
-        <PlayingCard key={key} code={code} className="w-10 sm:w-16" />
+      {keyedCards(cards).map(({ code, key }, i) => (
+        <PlayingCard
+          key={key}
+          code={code}
+          skin={skin}
+          delay={i * 0.1}
+          className="w-10 sm:w-16"
+        />
       ))}
       {empty.map((slot) => (
         <div

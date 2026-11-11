@@ -30,7 +30,7 @@ export function Seat({ seat, isYou = false }: Props) {
       aria-label={seat.name}
       aria-current={seat.isTurn ? "true" : undefined}
       className={cn(
-        "relative flex w-[72px] flex-col items-center text-bone sm:w-20",
+        "relative flex w-[72px] flex-col items-center text-bone transition-opacity duration-300 sm:w-20",
         seat.status === "folded" && "opacity-50",
       )}
     >
@@ -43,7 +43,7 @@ export function Seat({ seat, isYou = false }: Props) {
       />
       <div
         className={cn(
-          "w-full rounded-md border border-bone/40 bg-card-ink px-1.5 pt-3.5 pb-1 text-center",
+          "w-full rounded-md border border-bone/40 bg-card-ink px-1.5 pt-3.5 pb-1 text-center transition-[border-color,box-shadow] duration-300",
           seat.isTurn && "neon-glow neon-pulse border-neon-violet",
           isYou && !seat.isTurn && "border-bone",
         )}

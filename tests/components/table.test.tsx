@@ -92,6 +92,12 @@ describe("Table", () => {
       expect(skinOf(dealerCard())).toBe("fantasy");
     });
 
+    it("draws the poker board in the table skin", () => {
+      render(<Table view={{ ...pokerTable(4), boardSkinId: "vice" }} />);
+      const boardCard = screen.getByRole("img", { name: "Seven of hearts" });
+      expect(skinOf(boardCard)).toBe("vice");
+    });
+
     it("draws a hidden card with its owner's back", () => {
       const { container } = render(<Table view={pokerTable(3)} />);
       const group = screen.getByRole("group", { name: "Theo" });

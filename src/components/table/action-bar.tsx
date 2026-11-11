@@ -1,6 +1,7 @@
 "use client";
 
 import { MinusIcon, PlusIcon } from "lucide-react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { BetSlider } from "@/components/chips/bet-slider";
 import { Chip } from "@/components/chips/chip";
@@ -34,7 +35,8 @@ const LABELS: Record<LegalAction["type"], MessageKey> = {
   double: "action.double",
 };
 
-const BUTTON = "h-11 flex-1 text-sm font-bold";
+const BUTTON =
+  "h-11 flex-1 text-sm font-bold transition-transform motion-safe:active:scale-[0.97]";
 
 export function ActionBar({
   actions,
@@ -61,7 +63,12 @@ export function ActionBar({
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-3 rounded-xl border border-bone/20 bg-card-ink p-3 text-bone">
       {ranged && open && (
-        <div className="flex flex-col gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          className="flex flex-col gap-3"
+        >
           <output className="text-center font-bungee text-3xl text-neon-cyan leading-none">
             {format(amount)}
           </output>
@@ -133,7 +140,7 @@ export function ActionBar({
           >
             {t("action.raiseTo", { amount: format(amount) })}
           </Button>
-        </div>
+        </motion.div>
       )}
       <div className="flex gap-2">
         {actions.map((action) => {
