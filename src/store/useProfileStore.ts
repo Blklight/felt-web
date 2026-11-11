@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { newRecoveryCode } from "@/lib/recovery-code";
 
-// shortcut: stands in for the account on felt-server (GET/PATCH/DELETE /v1/me); the recovery code is the account token and should move to IndexedDB with the API.
+// shortcut: stands in for the account on felt-server (GET/PATCH/DELETE /v1/me), until the API exists; the recovery code is the account token.
 type Profile = {
   name: string;
   avatarId: string;
@@ -20,7 +20,7 @@ type ProfileState = Profile & {
 export const freshProfile = (): Profile => ({
   name: "Player",
   avatarId: "a1",
-  balance: 2500,
+  balance: 5000,
   recoveryCode: newRecoveryCode(),
 });
 
