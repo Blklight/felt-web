@@ -23,7 +23,7 @@ import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { useConnectionStore } from "@/store/useConnectionStore";
 
-const START_BALANCE = 2500;
+const START_BALANCE = 5000;
 
 export function ScriptedTable({
   game = "poker",

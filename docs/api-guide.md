@@ -67,9 +67,9 @@ Validação (a mesma da UI, que só antecipa o erro; quem decide é o servidor):
 
 **Token e código de recuperação.** O token tem 32 bytes aleatórios (`crypto.getRandomValues`) em base64url, sem padding: 43 caracteres, `^[A-Za-z0-9_-]{43}$`. O servidor guarda só o SHA-256. O código de recuperação que o jogador vê, copia e importa **é o próprio token**. Importar = o front troca o token guardado e chama `GET /v1/me`; `401` significa código inválido.
 
-Onde o front guarda o token: hoje em `localStorage` (store local de desenvolvimento). Com a API, passa para IndexedDB (lib `idb`, dependência nova, ainda não aprovada).
+Onde o front guarda o token: no `localStorage`, em um store persistido (ver a seção 8).
 
-**Créditos.** `STARTING_CREDITS` (a UI usa 2.500 nas demos) e recarga automática quando o saldo for menor que o buy-in mínimo ao entrar no lobby (`refills` conta as recargas). Valores finais ainda em aberto no plano.
+**Créditos.** `STARTING_CREDITS = 5000`. Recarga diária: uma vez por dia (dia UTC), se o saldo estiver abaixo de 2.500, ele **volta para 2.500** (`balance = max(balance, 2500)`). Quem tem mais que isso não ganha nada. A conta guarda `refills` (quantas recargas) e `lastRefillDay` (`"2026-11-11"`). A recarga acontece no `GET /v1/me` e entra no ledger com `reason: "refill"` e `ref` = `refill:<dia>`, o que a torna idempotente. Ver a seção 8.
 
 ### 2.2 Salas
 
@@ -90,7 +90,7 @@ type RoomConfig =
 - **Erros:** `ROOM_NOT_FOUND` (código inexistente) e `ROOM_FULL`.
 - **Skin da mesa:** `boardSkin` define a skin das cartas compartilhadas. O padrão é `"creator"`, a skin de quem criou a sala. Com `"draw"`, o servidor sorteia entre as skins dos sentados no início de cada mão, com o RNG dele, e guarda o resultado no snapshot.
 
-Buy-in usado pela UI: poker de 20 a 100 big blinds (25/50 dá 1.000 a 5.000); blackjack de 200 a 2.000; apostas de blackjack de 10 a 500.
+Buy-in: poker de 20 a 100 big blinds (25/50 dá 1.000 a 5.000); blackjack de 200 a 2.000, com apostas de 10 a 500 por mão. Ver a seção 8.
 
 ---
 
@@ -151,7 +151,7 @@ Uma ação ilegal **nunca** altera o estado (teste de propriedade do plano).
 
 ```ts
 type TableView = {
-  handId: number;                // NOVO: cresce a cada mão (ver 4.4)
+  handId: number;                // cresce a cada mão (ver seção 5)
   game: "poker" | "blackjack";
   phase: PokerPhase | BlackjackPhase;
   seats: SeatView[];
@@ -283,7 +283,7 @@ type LogEntry = {
 
 - Criar `src/net/api.ts` (contas e salas sobre o `apiClient`, sem refresh), `src/net/socket.ts` (conexão, `hello`, `ping`, backoff, `seq`) e `src/net/protocol.ts` (cópia sincronizada, com script `sync-protocol`).
 - `socket.ts` alimenta o `useConnectionStore` (já usado pela faixa de conexão).
-- Trocar `useProfileStore` por `GET/PATCH/DELETE /v1/me`; guardar o token em IndexedDB.
+- Trocar o perfil local de `useProfileStore` por `GET/PATCH/DELETE /v1/me`; o store passa a guardar só `playerId` e `token` (no `localStorage`).
 - `skin` e `back` do `useCardSkinStore` passam a vir do perfil (e a escolha no perfil vira `PATCH /v1/me`). A preferência "usar minha skin em todas as cartas" continua só local.
 - Acrescentar `handId` ao tipo `TableView` do front (hoje a mão roteirizada usa um contador próprio).
 - `TableScreen` passa a ler o `view` do socket; `Table` usa `key={view.handId}` com `animateDeal`.
@@ -293,10 +293,16 @@ type LogEntry = {
 
 ---
 
-## 8. Decisões em aberto
+## 8. Decisões tomadas
 
-1. Créditos iniciais e de recarga (2.500 ou 5.000).
-2. Token em IndexedDB com a lib `idb` (dependência nova).
-3. Valores finais de buy-in e de aposta do blackjack.
-4. Carta queimada antes de cada rua no poker: só visual (a UI pode mostrar) ou também registrada no `log`.
-5. Eventos (`events`) na v1 ou só snapshots.
+Aprovadas: `handId` no `view`, `boardSkin: "creator" | "draw"` na criação da sala e `secondsLeft` relativo ao envio.
+
+1. **Créditos: 5.000 iniciais e recarga diária que completa até 2.500.** Somar 2.500 todo dia (sem condição) faz o saldo só crescer para quem entra todo dia, e isso estraga um ranking futuro (ganha quem loga mais, não quem joga melhor). Completar até 2.500 resolve o caso que importa, a pessoa que perdeu tudo continuar jogando, e 2.500 cobre o buy-in mínimo dos dois jogos (1.000 no poker 25/50, 200 no blackjack). Os 5.000 iniciais deixam a pessoa entrar uma vez com o buy-in máximo do poker.
+
+2. **Token no `localStorage`, sem a lib `idb`.** IndexedDB não protege mais que o `localStorage`: os dois são lidos por qualquer script que rode na página, então o que protege o token é não ter XSS. Para isso: React escapando todo texto (o nome do jogador nunca vira HTML), uma Content Security Policy no Pages e o token nunca na URL nem em log. IndexedDB só passa a valer a pena se o front guardar dados maiores (histórico de mãos offline, por exemplo); aí entra o `idb`.
+
+3. **Blackjack: buy-in de 200 a 2.000 e aposta de 10 a 500 por mão.** Com 2.000 na mesa, a aposta máxima é um quarto do stack, e o mínimo de 10 rende pelo menos 20 mãos com o buy-in mínimo. Os valores ficam em `config.ts` do servidor; se depois quisermos mesas de limites diferentes, viram uma opção da sala como os blinds do poker.
+
+4. **Carta queimada: o motor queima de verdade, o `view` não mostra.** Queimar antes do flop, do turn e do river custa uma linha no motor e mantém a ordem do baralho igual à de uma mesa real. A carta queimada nunca é revelada, então ela não entra no `view` nem no `log`. Se quisermos ver a queima, a UI anima uma carta virada indo do baralho para um descarte sempre que o board cresce, sem mudar o protocolo.
+
+5. **Sem `events` na v1, só snapshots.** A UI já anima comparando dois `view` (seção 5), então eventos não acrescentam nada agora. Eles dobrariam o contrato e o teste de vazamento (cada evento também poderia vazar uma carta). O campo `events` fica reservado para quando aparecer uma animação que um snapshot não consegue explicar.
