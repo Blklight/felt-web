@@ -20,6 +20,7 @@ type Props = {
   step?: number;
   mode?: "slider" | "chips";
   defaultOpen?: boolean;
+  disabled?: boolean;
 };
 
 const CHIP_VALUES = [5, 25, 100, 500, 1000];
@@ -46,6 +47,7 @@ export function ActionBar({
   step = 25,
   mode = "slider",
   defaultOpen = false,
+  disabled = false,
 }: Props) {
   const t = useT();
   const format = useFormatNumber();
@@ -63,7 +65,10 @@ export function ActionBar({
   if (actions.length === 0) return null;
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-3 rounded-xl border border-bone/20 bg-card-ink p-3 text-bone">
+    <fieldset
+      disabled={disabled}
+      className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-3 rounded-xl border border-bone/20 bg-card-ink p-3 text-bone disabled:opacity-60"
+    >
       {ranged && open && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -201,6 +206,6 @@ export function ActionBar({
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }

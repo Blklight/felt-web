@@ -59,6 +59,7 @@ describe("Lobby", () => {
     await userEvent.type(screen.getByLabelText("Room code"), "kq7xz");
     await userEvent.click(screen.getByRole("button", { name: "Join" }));
     expect(push).toHaveBeenCalledWith("/table?code=KQ7XZ");
+    expect(screen.getByRole("button", { name: "Joining…" })).toBeDisabled();
   });
 });
 

@@ -32,6 +32,7 @@ describe("game showcase", () => {
       "action-bar",
       "card-skins",
       "animations",
+      "connection",
     ]);
   });
 });
