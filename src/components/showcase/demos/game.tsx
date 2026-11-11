@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CardBack } from "@/components/cards/card-back";
 import { Hand } from "@/components/cards/hand";
 import { PlayingCard } from "@/components/cards/playing-card";
+import { CARD_SKINS, type CardSkin } from "@/components/cards/skins";
 import { Chip } from "@/components/chips/chip";
 import { ChipStack } from "@/components/chips/chip-stack";
 import type { ShowcaseCategory } from "@/components/showcase/types";
@@ -11,10 +12,9 @@ import { ActionBar } from "@/components/table/action-bar";
 import { Seat } from "@/components/table/seat";
 import { Table } from "@/components/table/table";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { blackjackTable, pokerTable } from "@/dev/fixtures";
 import type { CardCode } from "@/dev/view-types";
+import { useCardSkinStore } from "@/store/useCardSkinStore";
 
 const SUITS = ["s", "h", "d", "c"] as const;
 const RANKS = [
@@ -38,10 +38,17 @@ const ALL_CARDS: CardCode[] = SUITS.flatMap((s) =>
 
 function PlayingCardDemo() {
   return (
-    <div className="flex flex-wrap gap-2 rounded-xl p-4 felt-surface">
+    <div className="grid max-w-3xl grid-cols-7 gap-3 rounded-xl p-4 felt-surface">
       {ALL_CARDS.map((code) => (
-        <PlayingCard key={code} code={code} />
+        <PlayingCard key={code} code={code} className="w-full" />
       ))}
+    </div>
+  );
+}
+
+function CardBackDemo() {
+  return (
+    <div className="flex gap-3 rounded-xl p-4 felt-surface">
       <CardBack variant="ink" />
       <CardBack variant="neon" />
     </div>
@@ -50,13 +57,17 @@ function PlayingCardDemo() {
 
 function ChipsDemo() {
   return (
-    <div className="flex flex-col gap-4 rounded-xl p-4 felt-surface">
-      <div className="flex gap-2">
+    <div className="flex flex-col gap-5 rounded-xl p-4 felt-surface">
+      <div className="flex gap-3">
         {[1, 5, 25, 100, 500, 1000].map((v) => (
-          <Chip key={v} value={v} />
+          <Chip key={v} value={v} className="size-14" />
         ))}
       </div>
-      <ChipStack amount={1775} />
+      <div className="flex gap-6">
+        <ChipStack amount={75} />
+        <ChipStack amount={1775} />
+        <ChipStack amount={12600} />
+      </div>
     </div>
   );
 }
@@ -114,15 +125,37 @@ function ActionBarDemo() {
   );
 }
 
-function FourColorToggleDemo() {
-  const [on, setOn] = useState(true);
+const SKIN_NAMES: Record<CardSkin, string> = {
+  classic: "Classic",
+  "four-color": "Four-color",
+  fantasy: "Fantasy",
+  noir: "Noir",
+};
+
+function CardSkinsDemo() {
+  const active = useCardSkinStore((state) => state.skin);
+  const setSkin = useCardSkinStore((state) => state.setSkin);
   return (
-    <div className="flex flex-col gap-3 rounded-xl p-4 felt-surface">
-      <div className="flex items-center gap-2 text-bone text-sm">
-        <Switch id="four-color" checked={on} onCheckedChange={setOn} />
-        <Label htmlFor="four-color">Four-color deck</Label>
-      </div>
-      <Hand cards={["As", "Kh", "Qd", "Jc"]} fourColor={on} />
+    <div className="flex flex-col gap-4 rounded-xl p-4 felt-surface">
+      {CARD_SKINS.map((skin) => (
+        <div key={skin} className="flex flex-wrap items-center gap-4">
+          <Button
+            size="sm"
+            variant={skin === active ? "default" : "outline"}
+            className="w-28"
+            aria-pressed={skin === active}
+            onClick={() => setSkin(skin)}
+          >
+            {SKIN_NAMES[skin]}
+          </Button>
+          <Hand
+            cards={["As", "Kh", "Qd", "Jc"]}
+            skin={skin}
+            className="space-x-2"
+            cardClassName="w-14"
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -132,6 +165,7 @@ export const gameCategory: ShowcaseCategory = {
   title: "Game",
   items: [
     { slug: "playing-card", name: "Playing card", demo: PlayingCardDemo },
+    { slug: "card-back", name: "Card back", demo: CardBackDemo },
     { slug: "chips", name: "Chips", demo: ChipsDemo },
     { slug: "seat", name: "Seat", demo: SeatDemo },
     { slug: "table-poker", name: "Table (poker)", demo: TablePokerDemo },
@@ -141,10 +175,6 @@ export const gameCategory: ShowcaseCategory = {
       demo: TableBlackjackDemo,
     },
     { slug: "action-bar", name: "Action bar", demo: ActionBarDemo },
-    {
-      slug: "four-color-toggle",
-      name: "Four-color deck",
-      demo: FourColorToggleDemo,
-    },
+    { slug: "card-skins", name: "Card skins", demo: CardSkinsDemo },
   ],
 };

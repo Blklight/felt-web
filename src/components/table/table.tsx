@@ -16,7 +16,7 @@ import type { TableView } from "@/dev/view-types";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
-type Props = { view: TableView; fourColor?: boolean };
+type Props = { view: TableView };
 
 const BOX: Record<TableShape, string> = {
   chamfer: "aspect-square max-w-xl sm:aspect-[4/3]",
@@ -32,7 +32,7 @@ function toward(from: Point, to: Point, amount: number): Point {
   };
 }
 
-export function Table({ view, fourColor }: Props) {
+export function Table({ view }: Props) {
   const t = useT();
   const count = view.seats.length;
   const shape = tableShape(view.game, count);
@@ -62,10 +62,10 @@ export function Table({ view, fourColor }: Props) {
           {view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
-              <Board cards={view.board} fourColor={fourColor} />
+              <Board cards={view.board} />
             </>
           ) : (
-            <Hand cards={view.board} fourColor={fourColor} />
+            <Hand cards={view.board} />
           )}
           <Timer secondsLeft={view.secondsLeft} />
         </div>
@@ -92,11 +92,7 @@ export function Table({ view, fourColor }: Props) {
               className="absolute -translate-x-1/2 -translate-y-1/2"
               style={{ left: `${at.x}%`, top: `${at.y}%` }}
             >
-              <Seat
-                seat={seat}
-                isYou={view.you.seat === seat.seat}
-                fourColor={fourColor}
-              />
+              <Seat seat={seat} isYou={view.you.seat === seat.seat} />
             </div>
           );
         })}

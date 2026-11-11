@@ -22,12 +22,13 @@ describe("game showcase", () => {
   it("exposes the planned demos", () => {
     expect(gameCategory.items.map((i) => i.slug)).toEqual([
       "playing-card",
+      "card-back",
       "chips",
       "seat",
       "table-poker",
       "table-blackjack",
       "action-bar",
-      "four-color-toggle",
+      "card-skins",
     ]);
   });
 });

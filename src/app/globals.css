@@ -19,7 +19,7 @@
    ============================================================ */
 @theme {
   /* --- Fonts --- */
-  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-sans: var(--font-barlow), "Barlow", sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", monospace;
   --font-pixel: var(--font-geist-pixel-square), "Geist Pixel Square", monospace;
   --font-bungee: var(--font-bungee-shade), sans-serif;
@@ -288,8 +288,8 @@
    ============================================================ */
 @theme inline {
   /* --- Fonts --- */
-  --font-heading: var(--font-mono);
-  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-barlow), "Barlow", sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", monospace;
   --font-pixel: var(--font-geist-pixel-square), "Geist Pixel Square", monospace;
   --font-pixel-circle:
@@ -400,7 +400,7 @@
   html {
     scroll-behavior: smooth;
     scrollbar-width: none;
-    @apply font-mono;
+    @apply font-sans;
   }
 
   html::-webkit-scrollbar {

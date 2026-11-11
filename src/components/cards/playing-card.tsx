@@ -1,23 +1,27 @@
 "use client";
 
 import { CardBack } from "@/components/cards/card-back";
-import { SUIT_PATHS, suitFill } from "@/components/cards/suits";
+import { type CardSkin, faceColor, suitFill } from "@/components/cards/skins";
+import { SUIT_PATHS } from "@/components/cards/suits";
 import type { CardCode } from "@/dev/view-types";
 import { useT } from "@/i18n/use-t";
 import { parseCard } from "@/lib/cards";
 import { cn } from "@/lib/utils";
+import { useCardSkinStore } from "@/store/useCardSkinStore";
 
-type Props = { code: CardCode; fourColor?: boolean; className?: string };
+type Props = { code: CardCode; skin?: CardSkin; className?: string };
 
 const INDEX_FONT = "var(--font-barlow), sans-serif";
 const VALUE_FONT = "var(--font-bungee-shade), sans-serif";
 
-export function PlayingCard({ code, fourColor = false, className }: Props) {
+export function PlayingCard({ code, skin, className }: Props) {
   const t = useT();
+  const storedSkin = useCardSkinStore((state) => state.skin);
+  const activeSkin = skin ?? storedSkin;
   const card = parseCard(code);
   if (card.hidden) return <CardBack className={className} />;
 
-  const fill = suitFill(card.suit, fourColor);
+  const fill = suitFill(card.suit, activeSkin);
   const label = t("card.label", {
     rank: t(`rank.${card.rank}`),
     suit: t(`suit.${card.suit}`),
@@ -54,8 +58,10 @@ export function PlayingCard({ code, fourColor = false, className }: Props) {
 
   return (
     <div
+      data-skin={activeSkin}
+      style={{ backgroundColor: faceColor(activeSkin) }}
       className={cn(
-        "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg bg-bone shadow-md",
+        "texture-item background-texture relative aspect-[5/7] w-20 overflow-hidden rounded-lg shadow-md",
         className,
       )}
     >

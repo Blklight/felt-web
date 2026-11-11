@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import {
   Barlow,
   Bungee_Shade,
-  Inter,
   JetBrains_Mono,
   Monoton,
 } from "next/font/google";
@@ -14,13 +13,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 const barlow = Barlow({
-  weight: "700",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-barlow",
 });
@@ -54,8 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={cn(
         "antialiased",
-        inter.variable,
-        "font-mono",
+        "font-sans",
         jetBrainsMono.variable,
         barlow.variable,
         bungeeShade.variable,

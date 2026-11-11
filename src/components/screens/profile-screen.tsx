@@ -18,7 +18,7 @@ export function ProfileScreen() {
       </div>
       <p>
         {t("profile.balance")}:{" "}
-        <span className="font-mono font-semibold">{format(2500)}</span>
+        <span className="tabular-nums font-semibold">{format(2500)}</span>
       </p>
       <div className="flex flex-col gap-1">
         <Label htmlFor="recovery">{t("profile.recovery")}</Label>
