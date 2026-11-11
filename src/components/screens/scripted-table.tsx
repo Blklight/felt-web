@@ -8,13 +8,24 @@ import { HandBadge } from "@/components/table/hand-badge";
 import { HandRankings } from "@/components/table/hand-rankings";
 import { LeaveButton } from "@/components/table/leave-button";
 import { Table } from "@/components/table/table";
+import {
+  BLACKJACK_BUY_IN,
+  blackjackWatchingView,
+  useBlackjackScript,
+} from "@/dev/use-blackjack-script";
 import { BUY_IN, useHandScript, watchingView } from "@/dev/use-hand-script";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 
 const START_BALANCE = 2500;
 
-export function ScriptedTable() {
+export function ScriptedTable({
+  game = "poker",
+}: {
+  game?: "poker" | "blackjack";
+}) {
+  const blackjack = game === "blackjack";
+  const limits = blackjack ? BLACKJACK_BUY_IN : BUY_IN;
   const t = useT();
   const format = useFormatNumber();
   const [balance, setBalance] = useState(START_BALANCE);
@@ -28,7 +39,10 @@ export function ScriptedTable() {
           <p className="text-muted-foreground text-sm">
             {t("table.spectating")}
           </p>
-          <Table view={watchingView()} onSit={setPicking} />
+          <Table
+            view={blackjack ? blackjackWatchingView() : watchingView()}
+            onSit={setPicking}
+          />
           <p className="text-muted-foreground text-sm">
             {t("buyIn.balance", { amount: format(balance) })}
           </p>
@@ -36,8 +50,8 @@ export function ScriptedTable() {
             open={picking !== null}
             onOpenChange={(open) => !open && setPicking(null)}
             seat={picking ?? 0}
-            min={BUY_IN.min}
-            max={BUY_IN.max}
+            min={limits.min}
+            max={limits.max}
             balance={balance}
             onConfirm={(amount) => {
               setBalance((b) => b - amount);
@@ -48,6 +62,7 @@ export function ScriptedTable() {
         </>
       ) : (
         <Playing
+          blackjack={blackjack}
           buyIn={buyIn}
           onLeave={(stack) => {
             setBalance((b) => b + stack);
@@ -59,13 +74,45 @@ export function ScriptedTable() {
   );
 }
 
+type PlayingProps = { buyIn: number; onLeave: (stack: number) => void };
+
 function Playing({
-  buyIn,
-  onLeave,
-}: {
-  buyIn: number;
-  onLeave: (stack: number) => void;
-}) {
+  blackjack,
+  ...props
+}: PlayingProps & { blackjack: boolean }) {
+  return blackjack ? (
+    <BlackjackPlaying {...props} />
+  ) : (
+    <PokerPlaying {...props} />
+  );
+}
+
+function BlackjackPlaying({ buyIn, onLeave }: PlayingProps) {
+  const { view, dealKey, act } = useBlackjackScript(buyIn);
+  const stack = view.seats.find((s) => s.seat === view.you.seat)?.stack ?? 0;
+  return (
+    <>
+      <Table key={dealKey} view={view} animateDeal={view.phase !== "betting"} />
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <LeaveButton stack={stack} onLeave={() => onLeave(stack)} />
+      </div>
+      <ActionBar
+        key={view.phase}
+        actions={view.you.legalActions}
+        mode="chips"
+        defaultOpen={view.phase === "betting"}
+        onAction={act}
+      />
+      <ActionLog
+        entries={view.log ?? []}
+        seats={view.seats}
+        you={view.you.seat}
+      />
+    </>
+  );
+}
+
+function PokerPlaying({ buyIn, onLeave }: PlayingProps) {
   const { view, hand } = useHandScript(buyIn);
   const stack = view.seats.find((s) => s.seat === view.you.seat)?.stack ?? 0;
   return (

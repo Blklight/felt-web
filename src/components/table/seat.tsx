@@ -73,6 +73,31 @@ export function Seat({
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />
+      {seat.total !== undefined && (
+        <span
+          role="img"
+          aria-label={t("seat.total", { total: seat.total })}
+          className="absolute top-1 -right-3 z-20 flex size-6 items-center justify-center rounded-full border border-bone/50 bg-card-ink font-bold text-[11px] text-bone tabular-nums"
+        >
+          {seat.total}
+        </span>
+      )}
+      {seat.outcome && (
+        <span
+          className={cn(
+            "absolute -top-6 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-0.5 font-bold text-[11px]",
+            seat.outcome.kind === "win" || seat.outcome.kind === "blackjack"
+              ? "bg-neon-cyan text-card-ink"
+              : seat.outcome.kind === "push"
+                ? "bg-bone text-card-ink"
+                : "bg-suit-red text-white",
+          )}
+        >
+          {t(`outcome.${seat.outcome.kind}`, {
+            amount: format(seat.outcome.amount ?? 0),
+          })}
+        </span>
+      )}
       <div
         className={cn(
           "w-full rounded-md border border-bone/40 bg-card-ink px-1.5 pt-3.5 pb-1 text-center transition-[border-color,box-shadow] duration-300",

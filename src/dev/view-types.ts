@@ -22,6 +22,7 @@ export type LegalAction = {
     | "fold"
     | "check"
     | "call"
+    | "bet"
     | "raise"
     | "all-in"
     | "hit"
@@ -68,6 +69,11 @@ export type LogEntry = {
   amount?: number;
 };
 
+export type Outcome = {
+  kind: "win" | "blackjack" | "push" | "lose" | "bust";
+  amount?: number;
+};
+
 export type SeatView = {
   seat: number;
   name: string;
@@ -80,6 +86,8 @@ export type SeatView = {
   status: "active" | "folded" | "all-in" | "out" | "empty";
   isDealer: boolean;
   blind?: "small" | "big";
+  total?: number;
+  outcome?: Outcome;
   isTurn: boolean;
 };
 
@@ -96,4 +104,5 @@ export type TableView = {
   result?: { winners: Winner[] };
   log?: LogEntry[];
   buyIn?: { min: number; max: number };
+  dealerTotal?: number;
 };

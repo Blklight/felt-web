@@ -28,6 +28,7 @@ const LABELS: Record<LegalAction["type"], MessageKey> = {
   fold: "action.fold",
   check: "action.check",
   call: "action.call",
+  bet: "action.bet",
   raise: "action.raise",
   "all-in": "action.allIn",
   hit: "action.hit",
@@ -51,7 +52,8 @@ export function ActionBar({
   const [open, setOpen] = useState(defaultOpen);
   const [picked, setPicked] = useState<number | null>(null);
 
-  const raise = actions.find((a) => a.type === "raise");
+  const raise = actions.find((a) => a.type === "raise" || a.type === "bet");
+  const kind = raise?.type === "bet" ? "bet" : "raise";
   const min = raise?.min ?? 0;
   const max = raise?.max ?? 0;
   const clamp = (value: number) => Math.min(max, Math.max(min, value));
@@ -115,13 +117,17 @@ export function ActionBar({
             </div>
           )}
           <div className="flex gap-2">
-            {(
-              [
-                ["preset.min", min],
-                ["preset.half", Math.round(pot / 2)],
-                ["preset.pot", pot],
-                ["action.allIn", max],
-              ] as const
+            {(kind === "bet"
+              ? ([
+                  ["preset.min", min],
+                  ["preset.max", max],
+                ] as const)
+              : ([
+                  ["preset.min", min],
+                  ["preset.half", Math.round(pot / 2)],
+                  ["preset.pot", pot],
+                  ["action.allIn", max],
+                ] as const)
             ).map(([key, value]) => (
               <Button
                 key={key}
@@ -136,15 +142,17 @@ export function ActionBar({
           </div>
           <Button
             className="h-11 w-full bg-neon-violet font-bold text-sm text-white hover:bg-neon-violet/90"
-            onClick={() => onAction({ type: "raise", amount })}
+            onClick={() => onAction({ type: kind, amount })}
           >
-            {t("action.raiseTo", { amount: format(amount) })}
+            {t(kind === "bet" ? "action.betAmount" : "action.raiseTo", {
+              amount: format(amount),
+            })}
           </Button>
         </motion.div>
       )}
       <div className="flex gap-2">
         {actions.map((action) => {
-          if (action.type === "raise") {
+          if (action.type === "raise" || action.type === "bet") {
             return ranged ? (
               <Button
                 key="raise"
@@ -155,7 +163,7 @@ export function ActionBar({
                 )}
                 onClick={() => setOpen((v) => !v)}
               >
-                {t("action.raise")}
+                {t(LABELS[action.type])}
               </Button>
             ) : (
               <Button
@@ -164,7 +172,7 @@ export function ActionBar({
                   BUTTON,
                   "bg-neon-violet text-white hover:bg-neon-violet/90",
                 )}
-                onClick={() => onAction({ type: "raise", amount: max })}
+                onClick={() => onAction({ type: action.type, amount: max })}
               >
                 {t("action.allIn")}
               </Button>

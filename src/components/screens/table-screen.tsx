@@ -6,7 +6,13 @@ import { ScriptedTable } from "@/components/screens/scripted-table";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
 
-export function TableScreen({ code }: { code: string | null }) {
+export function TableScreen({
+  code,
+  game = "poker",
+}: {
+  code: string | null;
+  game?: "poker" | "blackjack";
+}) {
   const t = useT();
 
   if (!code || !isValidRoomCode(code)) {
@@ -25,11 +31,13 @@ export function TableScreen({ code }: { code: string | null }) {
       <h1 className="tabular-nums text-muted-foreground text-sm">
         {t("table.room", { code })}
       </h1>
-      <ScriptedTable />
+      <ScriptedTable game={game} />
     </div>
   );
 }
 
 export function TableRoute() {
-  return <TableScreen code={useSearchParams().get("code")} />;
+  const params = useSearchParams();
+  const game = params.get("game") === "blackjack" ? "blackjack" : "poker";
+  return <TableScreen code={params.get("code")} game={game} />;
 }
