@@ -77,10 +77,12 @@ describe("TableScreen", () => {
     expect(screen.queryByRole("timer")).not.toBeInTheDocument();
   });
 
-  it("renders the table for a valid code", () => {
+  it("opens the table for a valid code, watching until the player sits", () => {
     render(<TableScreen code="KQ7XZ" />);
     expect(screen.getByText("Room KQ7XZ")).toBeInTheDocument();
-    expect(screen.getByRole("timer")).toBeInTheDocument();
+    expect(
+      screen.getByText("You are watching. Pick a free seat to play."),
+    ).toBeInTheDocument();
   });
 });
 

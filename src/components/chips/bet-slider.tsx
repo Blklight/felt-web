@@ -8,13 +8,23 @@ type Props = {
   max: number;
   value: number;
   onChange: (value: number) => void;
+  label?: string;
+  disabled?: boolean;
 };
 
-export function BetSlider({ min, max, value, onChange }: Props) {
+export function BetSlider({
+  min,
+  max,
+  value,
+  onChange,
+  label,
+  disabled,
+}: Props) {
   const t = useT();
   return (
     <Slider
-      aria-label={t("action.raise")}
+      aria-label={label ?? t("action.raise")}
+      disabled={disabled}
       min={min}
       max={max}
       value={[value]}

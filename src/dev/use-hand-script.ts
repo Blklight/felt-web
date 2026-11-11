@@ -84,7 +84,7 @@ const street =
     board: BOARD.slice(0, cards),
   });
 
-export function dealView(): TableView {
+export function dealView(buyIn = 1500): TableView {
   const base = pokerTable(4);
   const fresh: TableView = {
     ...base,
@@ -93,6 +93,7 @@ export function dealView(): TableView {
     pots: [],
     seats: base.seats.map((s, i) => ({
       ...s,
+      stack: i === YOU ? buyIn : s.stack,
       bet: 0,
       status: "active",
       cards: i === YOU ? ["As", "Kd"] : ["??", "??"],
@@ -211,8 +212,12 @@ export const HAND_STEPS: Step[] = [
   },
 ];
 
-export function useHandScript() {
-  const [state, setState] = useState({ hand: 0, step: 0, view: dealView() });
+export function useHandScript(buyIn?: number) {
+  const [state, setState] = useState({
+    hand: 0,
+    step: 0,
+    view: dealView(buyIn),
+  });
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -225,11 +230,32 @@ export function useHandScript() {
             view: HAND_STEPS[next].apply(s.view),
           };
         }
-        return { hand: s.hand + 1, step: 0, view: dealView() };
+        return { hand: s.hand + 1, step: 0, view: dealView(buyIn) };
       });
     }, HAND_STEPS[state.step].wait * 1000);
     return () => clearTimeout(id);
-  }, [state]);
+  }, [state, buyIn]);
 
   return state;
+}
+
+export const BUY_IN = { min: 1000, max: 5000 };
+
+export function watchingView(): TableView {
+  const base = pokerTable(4);
+  return {
+    ...base,
+    phase: "waiting",
+    board: [],
+    pots: [],
+    secondsLeft: null,
+    buyIn: BUY_IN,
+    log: [],
+    seats: base.seats.map((s, i) =>
+      i === YOU
+        ? { ...s, status: "empty", name: "", cards: [], bet: 0, isTurn: false }
+        : { ...s, cards: [], bet: 0, isTurn: false },
+    ),
+    you: { seat: null, legalActions: [] },
+  };
 }
