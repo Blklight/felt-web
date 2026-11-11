@@ -24,6 +24,7 @@ type Props = {
   className?: string;
   dealFrom?: RefObject<HTMLElement | null>;
   dealDelay?: number;
+  highlight?: "win" | "dim";
 };
 
 export function TableCard({
@@ -33,6 +34,7 @@ export function TableCard({
   className,
   dealFrom,
   dealDelay = 0,
+  highlight,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -81,8 +83,12 @@ export function TableCard({
   return (
     <div
       ref={ref}
+      data-highlight={highlight}
       className={cn(
-        "relative aspect-[5/7] w-20 [perspective:800px]",
+        "relative aspect-[5/7] w-20 transition-[translate,opacity,filter] duration-300 [perspective:800px]",
+        highlight === "win" &&
+          "-translate-y-1.5 drop-shadow-[0_0_10px_var(--color-neon-cyan)]",
+        highlight === "dim" && "opacity-45",
         className,
       )}
     >

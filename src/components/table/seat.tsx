@@ -2,7 +2,7 @@
 
 import type { RefObject } from "react";
 import { Hand } from "@/components/cards/hand";
-import type { SeatView } from "@/dev/view-types";
+import type { CardCode, SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
@@ -13,9 +13,18 @@ type Props = {
   isYou?: boolean;
   dealFrom?: RefObject<HTMLElement | null>;
   dealDelays?: number[];
+  winner?: boolean;
+  highlight?: (code: CardCode) => "win" | "dim" | undefined;
 };
 
-export function Seat({ seat, isYou = false, dealFrom, dealDelays }: Props) {
+export function Seat({
+  seat,
+  isYou = false,
+  dealFrom,
+  dealDelays,
+  winner = false,
+  highlight,
+}: Props) {
   const t = useT();
   const format = useFormatNumber();
   const look = useCardLook(seat.skinId, seat.backId);
@@ -35,6 +44,7 @@ export function Seat({ seat, isYou = false, dealFrom, dealDelays }: Props) {
     <fieldset
       aria-label={seat.name}
       aria-current={seat.isTurn ? "true" : undefined}
+      data-winner={winner ? "true" : undefined}
       className={cn(
         "relative flex w-[72px] flex-col items-center text-bone transition-opacity duration-300 sm:w-20",
         seat.status === "folded" && "opacity-50",
@@ -46,6 +56,7 @@ export function Seat({ seat, isYou = false, dealFrom, dealDelays }: Props) {
         back={look.back}
         dealFrom={dealFrom}
         dealDelays={dealDelays}
+        highlight={highlight}
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />
@@ -54,6 +65,7 @@ export function Seat({ seat, isYou = false, dealFrom, dealDelays }: Props) {
           "w-full rounded-md border border-bone/40 bg-card-ink px-1.5 pt-3.5 pb-1 text-center transition-[border-color,box-shadow] duration-300",
           seat.isTurn && "neon-glow neon-pulse border-neon-violet",
           isYou && !seat.isTurn && "border-bone",
+          winner && "border-neon-cyan shadow-[0_0_16px_var(--color-neon-cyan)]",
         )}
       >
         <p
