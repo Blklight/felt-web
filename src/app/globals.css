@@ -22,6 +22,7 @@
   --font-sans: var(--font-inter), "Inter", sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", monospace;
   --font-pixel: var(--font-geist-pixel-square), "Geist Pixel Square", monospace;
+  --font-bungee: var(--font-bungee-shade), sans-serif;
   --font-pixel-circle:
     var(--font-geist-pixel-circle), "Geist Pixel Circle", monospace;
 
@@ -480,6 +481,88 @@
       var(--color-felt-deep)
     );
   background-blend-mode: soft-light, normal;
+}
+
+.table-rim,
+.table-felt,
+.table-line {
+  position: absolute;
+}
+.table-rim {
+  inset: 0;
+  background: var(--color-card-ink);
+}
+.table-felt {
+  inset: 8px;
+}
+.table-line {
+  inset: 18px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  pointer-events: none;
+}
+@media (min-width: 40rem) {
+  .table-felt {
+    inset: 12px;
+  }
+  .table-line {
+    inset: 24px;
+  }
+}
+[data-shape="stadium"] > :is(.table-rim, .table-felt, .table-line) {
+  border-radius: 999px;
+}
+[data-shape="round"] > .table-rim {
+  border-radius: 44px;
+}
+[data-shape="round"] > .table-felt {
+  border-radius: 34px;
+}
+[data-shape="round"] > .table-line {
+  border-radius: 22px;
+}
+[data-shape="halfmoon"] > :is(.table-rim, .table-felt, .table-line) {
+  border-radius: 4% 4% 50% 50% / 4% 4% 96% 96%;
+}
+[data-shape="halfmoon"] > .table-line {
+  border-top: 0;
+}
+[data-shape="chamfer"] > .table-rim {
+  clip-path: polygon(
+    34px 0,
+    calc(100% - 34px) 0,
+    100% 34px,
+    100% calc(100% - 34px),
+    calc(100% - 34px) 100%,
+    34px 100%,
+    0 calc(100% - 34px),
+    0 34px
+  );
+}
+[data-shape="chamfer"] > .table-felt {
+  clip-path: polygon(
+    26px 0,
+    calc(100% - 26px) 0,
+    100% 26px,
+    100% calc(100% - 26px),
+    calc(100% - 26px) 100%,
+    26px 100%,
+    0 calc(100% - 26px),
+    0 26px
+  );
+}
+[data-shape="chamfer"] > .table-line {
+  border: 0;
+  background: rgb(255 255 255 / 0.08);
+  clip-path: polygon(
+    16px 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% calc(100% - 16px),
+    calc(100% - 16px) 100%,
+    16px 100%,
+    0 calc(100% - 16px),
+    0 16px
+  );
 }
 
 .neon-glow {

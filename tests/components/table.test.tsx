@@ -32,4 +32,30 @@ describe("Table", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("timer")).toBeInTheDocument();
   });
+
+  it.each([
+    [pokerTable(2), "chamfer"],
+    [pokerTable(4), "round"],
+    [pokerTable(6), "stadium"],
+    [blackjackTable, "halfmoon"],
+  ] as const)("uses the %# shape for its game and seat count", (view, shape) => {
+    const { container } = render(<Table view={view} />);
+    expect(container.querySelector("[data-shape]")).toHaveAttribute(
+      "data-shape",
+      shape,
+    );
+  });
+
+  it("seats the viewer at the bottom center whichever seat number they have", () => {
+    const base = pokerTable(4);
+    const view = { ...base, you: { ...base.you, seat: 2 } };
+    render(<Table view={view} />);
+    const slot = screen.getByRole("group", { name: "Theo" }).parentElement;
+    expect(slot?.style.left).toBe("50%");
+  });
+
+  it("shows each player's bet on the felt", () => {
+    render(<Table view={pokerTable(3)} />);
+    expect(screen.getByLabelText("Mara's stake")).toHaveTextContent("50");
+  });
 });

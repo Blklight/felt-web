@@ -29,7 +29,11 @@ export function TableScreen({ code }: { code: string | null }) {
         {t("table.room", { code })}
       </h1>
       <Table view={view} />
-      <ActionBar actions={view.you.legalActions} onAction={() => {}} />
+      <ActionBar
+        actions={view.you.legalActions}
+        pot={view.pots.reduce((a, b) => a + b, 0)}
+        onAction={() => {}}
+      />
     </div>
   );
 }

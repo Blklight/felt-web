@@ -1,8 +1,6 @@
 "use client";
 
 import { Hand } from "@/components/cards/hand";
-import { ChipStack } from "@/components/chips/chip-stack";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
@@ -18,7 +16,7 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
     return (
       <fieldset
         aria-label={t("seat.free")}
-        className="flex h-16 w-24 items-center justify-center rounded-lg border border-bone/20 border-dashed text-bone/60 text-xs"
+        className="flex h-12 w-[72px] items-center justify-center rounded-md border border-bone/30 border-dashed bg-card-ink/60 text-center text-[11px] text-bone/70 sm:w-20"
       >
         {t("seat.free")}
       </fieldset>
@@ -30,36 +28,42 @@ export function Seat({ seat, isYou = false, fourColor }: Props) {
       aria-label={seat.name}
       aria-current={seat.isTurn ? "true" : undefined}
       className={cn(
-        "flex w-20 flex-col sm:w-28 items-center gap-1 rounded-xl bg-black/40 p-2 text-bone",
-        seat.isTurn && "neon-glow neon-pulse",
+        "relative flex w-[72px] flex-col items-center text-bone sm:w-20",
         seat.status === "folded" && "opacity-50",
-        isYou && "ring-1 ring-bone/40",
       )}
     >
-      <Hand cards={seat.cards} fourColor={fourColor} />
-      <div className="flex w-full items-center gap-1.5">
-        <Avatar size="sm" className="hidden sm:flex">
-          <AvatarFallback>{seat.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-medium text-xs" title={seat.name}>
-            {seat.name}
-          </p>
-          <p className="font-mono text-[11px] text-bone/80">
-            {format(seat.stack)}
-          </p>
-        </div>
-        {seat.isDealer && (
-          <span
-            role="img"
-            aria-label={t("seat.dealer")}
-            className="flex size-5 items-center justify-center rounded-full bg-bone font-bold text-[10px] text-card-ink"
-          >
-            D
-          </span>
+      <Hand
+        cards={seat.cards}
+        fourColor={fourColor}
+        className="relative z-10 -mb-3 -space-x-3"
+        cardClassName="w-9 sm:w-11"
+      />
+      <div
+        className={cn(
+          "w-full rounded-md border border-bone/40 bg-card-ink px-1.5 pt-3.5 pb-1 text-center",
+          seat.isTurn && "neon-glow neon-pulse border-neon-violet",
+          isYou && !seat.isTurn && "border-bone",
         )}
+      >
+        <p
+          className="truncate font-semibold text-[11px] leading-tight"
+          title={seat.name}
+        >
+          {seat.name}
+        </p>
+        <p className="font-mono text-[11px] text-bone/80 leading-tight">
+          {format(seat.stack)}
+        </p>
       </div>
-      <ChipStack amount={seat.bet} />
+      {seat.isDealer && (
+        <span
+          role="img"
+          aria-label={t("seat.dealer")}
+          className="absolute -top-1 -right-2 z-20 flex size-5 items-center justify-center rounded-full bg-bone font-bold text-[10px] text-card-ink"
+        >
+          D
+        </span>
+      )}
     </fieldset>
   );
 }
