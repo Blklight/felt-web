@@ -1,3 +1,5 @@
+import type { CardBackVariant, CardSkin } from "@/components/cards/skins";
+
 export type Rank =
   | "A"
   | "2"
@@ -34,6 +36,8 @@ export type SeatView = {
   seat: number;
   name: string;
   avatarId: string;
+  skinId: CardSkin;
+  backId: CardBackVariant;
   stack: number;
   bet: number;
   cards: CardCode[];
@@ -47,6 +51,8 @@ export type TableView = {
   phase: string;
   seats: SeatView[];
   board: CardCode[];
+  boardSkinId: CardSkin;
+  boardBackId: CardBackVariant;
   pots: number[];
   secondsLeft: number | null;
   you: { seat: number | null; legalActions: LegalAction[] };

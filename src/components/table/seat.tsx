@@ -5,12 +5,14 @@ import type { SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
+import { useCardLook } from "@/store/useCardSkinStore";
 
 type Props = { seat: SeatView; isYou?: boolean };
 
 export function Seat({ seat, isYou = false }: Props) {
   const t = useT();
   const format = useFormatNumber();
+  const look = useCardLook(seat.skinId, seat.backId);
 
   if (seat.status === "empty") {
     return (
@@ -34,6 +36,8 @@ export function Seat({ seat, isYou = false }: Props) {
     >
       <Hand
         cards={seat.cards}
+        skin={look.skin}
+        back={look.back}
         className="relative z-10 -mb-3 -space-x-3"
         cardClassName="w-9 sm:w-11"
       />

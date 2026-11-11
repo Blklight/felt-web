@@ -16,6 +16,8 @@ import { ActionBar } from "@/components/table/action-bar";
 import { Seat } from "@/components/table/seat";
 import { Table } from "@/components/table/table";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { blackjackTable, pokerTable } from "@/dev/fixtures";
 import type { CardCode } from "@/dev/view-types";
 import { useCardSkinStore } from "@/store/useCardSkinStore";
@@ -160,8 +162,22 @@ const SKIN_NAMES: Record<CardSkin, string> = {
 function CardSkinsDemo() {
   const active = useCardSkinStore((state) => state.skin);
   const setSkin = useCardSkinStore((state) => state.setSkin);
+  const overrideOthers = useCardSkinStore((state) => state.overrideOthers);
+  const setOverrideOthers = useCardSkinStore(
+    (state) => state.setOverrideOthers,
+  );
   return (
     <div className="flex flex-col gap-4 rounded-xl p-4 felt-surface">
+      <div className="flex items-center gap-2 text-bone text-sm">
+        <Switch
+          id="override-others"
+          checked={overrideOthers}
+          onCheckedChange={setOverrideOthers}
+        />
+        <Label htmlFor="override-others">
+          Use my skin and back on every card
+        </Label>
+      </div>
       {CARD_SKINS.map((skin) => (
         <div key={skin} className="flex flex-wrap items-center gap-4">
           <Button

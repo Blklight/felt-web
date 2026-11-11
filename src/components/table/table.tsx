@@ -15,6 +15,7 @@ import { Timer } from "@/components/table/timer";
 import type { TableView } from "@/dev/view-types";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
+import { useCardLook } from "@/store/useCardSkinStore";
 
 type Props = { view: TableView };
 
@@ -34,6 +35,7 @@ function toward(from: Point, to: Point, amount: number): Point {
 
 export function Table({ view }: Props) {
   const t = useT();
+  const look = useCardLook(view.boardSkinId, view.boardBackId);
   const count = view.seats.length;
   const shape = tableShape(view.game, count);
   const slots = seatPositions(shape, count);
@@ -62,10 +64,10 @@ export function Table({ view }: Props) {
           {view.game === "poker" ? (
             <>
               <Pot pots={view.pots} />
-              <Board cards={view.board} />
+              <Board cards={view.board} skin={look.skin} />
             </>
           ) : (
-            <Hand cards={view.board} />
+            <Hand cards={view.board} skin={look.skin} back={look.back} />
           )}
           <Timer secondsLeft={view.secondsLeft} />
         </div>
