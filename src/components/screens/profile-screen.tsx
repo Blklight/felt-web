@@ -1,11 +1,12 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CardBack } from "@/components/cards/card-back";
 import { PlayingCard } from "@/components/cards/playing-card";
 import { CARD_BACKS, CARD_SKINS } from "@/components/cards/skins";
-import { AVATAR_IDS, PlayerAvatar } from "@/components/player-avatar";
+import { PlayerAvatar } from "@/components/player-avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,11 +27,35 @@ import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { isRecoveryCode } from "@/lib/recovery-code";
 import { cn } from "@/lib/utils";
+import { ApiFailure, deleteMe, getMe, patchMe } from "@/net/api";
+import { AVATAR_IDS, type Profile } from "@/net/protocol";
+import { ME_KEY, useMe } from "@/net/queries";
 import { useCardSkinStore } from "@/store/useCardSkinStore";
 import { useProfileStore } from "@/store/useProfileStore";
 import { useRecentTablesStore } from "@/store/useRecentTablesStore";
 
 const NAME = { min: 2, max: 20 };
+
+// PATCH /v1/me; the server freezes the profile while the player is seated (409).
+function useSaveProfile() {
+  const t = useT();
+  const queryClient = useQueryClient();
+  return async (patch: Parameters<typeof patchMe>[0]) => {
+    try {
+      queryClient.setQueryData(ME_KEY, await patchMe(patch));
+      return true;
+    } catch (failure) {
+      toast.error(
+        t(
+          failure instanceof ApiFailure && failure.status === 409
+            ? "profile.locked"
+            : "error.UNKNOWN",
+        ),
+      );
+      return false;
+    }
+  };
+}
 
 function Section({
   title,
@@ -82,12 +107,12 @@ function Choice({
   );
 }
 
-function NameField() {
+function NameField({ name }: { name: string }) {
   const t = useT();
-  const { name, setName } = useProfileStore();
+  const saveProfile = useSaveProfile();
   const [draft, setDraft] = useState(name);
   const [invalid, setInvalid] = useState(false);
-  const save = (event: React.FormEvent) => {
+  const save = async (event: React.FormEvent) => {
     event.preventDefault();
     const clean = draft.trim();
     if (clean.length < NAME.min || clean.length > NAME.max) {
@@ -95,9 +120,10 @@ function NameField() {
       return;
     }
     setInvalid(false);
-    setName(clean);
-    setDraft(clean);
-    toast.success(t("profile.nameSaved"));
+    if (await saveProfile({ name: clean })) {
+      setDraft(clean);
+      toast.success(t("profile.nameSaved"));
+    }
   };
   return (
     <form onSubmit={save} className="flex flex-col gap-2">
@@ -125,7 +151,8 @@ function NameField() {
 
 function RecoveryCode() {
   const t = useT();
-  const { recoveryCode, importCode } = useProfileStore();
+  const recoveryCode = useProfileStore((s) => s.token) ?? "";
+  const queryClient = useQueryClient();
   const [shown, setShown] = useState(false);
   const [importing, setImporting] = useState(false);
   const [draft, setDraft] = useState("");
@@ -135,14 +162,20 @@ function RecoveryCode() {
     await navigator.clipboard.writeText(recoveryCode);
     toast.success(t("profile.copied"));
   };
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     const code = draft.trim();
-    if (!isRecoveryCode(code)) {
+    let account: Profile | null = null;
+    if (isRecoveryCode(code)) {
+      // the code is the token: it only replaces the stored one if the server knows it
+      account = await getMe(code).catch(() => null);
+    }
+    if (!account) {
       setInvalid(true);
       return;
     }
-    importCode(code);
+    useProfileStore.getState().setAccount(account.playerId, code);
+    queryClient.setQueryData(ME_KEY, account);
     setInvalid(false);
     setImporting(false);
     setDraft("");
@@ -199,7 +232,7 @@ function RecoveryCode() {
 
 function DeleteAccount() {
   const t = useT();
-  const reset = useProfileStore((s) => s.reset);
+  const queryClient = useQueryClient();
   const clearRecent = useRecentTablesStore((s) => s.clear);
   return (
     <AlertDialog>
@@ -217,8 +250,15 @@ function DeleteAccount() {
           <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => {
-              reset();
+            onClick={async () => {
+              try {
+                await deleteMe();
+              } catch {
+                toast.error(t("error.UNKNOWN"));
+                return;
+              }
+              useProfileStore.getState().clear();
+              queryClient.clear();
               clearRecent();
               toast.success(t("profile.deleted"));
             }}
@@ -235,11 +275,12 @@ export function ProfileScreen() {
   const t = useT();
   const format = useFormatNumber();
   const hydrated = useHydrated();
-  const { name, avatarId, balance, setAvatar } = useProfileStore();
-  const { skin, back, overrideOthers, setSkin, setBack, setOverrideOthers } =
-    useCardSkinStore();
+  const profile = useMe().data;
+  const saveProfile = useSaveProfile();
+  const { overrideOthers, setOverrideOthers } = useCardSkinStore();
 
-  if (!hydrated) return null;
+  if (!hydrated || !profile) return null;
+  const { name, avatarId, balance, skinId: skin, backId: back } = profile;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
@@ -257,7 +298,7 @@ export function ProfileScreen() {
       </header>
 
       <Section title={t("profile.name")}>
-        <NameField key={name} />
+        <NameField key={name} name={name} />
       </Section>
 
       <Section title={t("profile.avatar")}>
@@ -272,7 +313,7 @@ export function ProfileScreen() {
               key={id}
               checked={id === avatarId}
               label={t("avatar.label", { n: i + 1 })}
-              onSelect={() => setAvatar(id)}
+              onSelect={() => saveProfile({ avatarId: id })}
             >
               <PlayerAvatar id={id} />
             </Choice>
@@ -292,7 +333,7 @@ export function ProfileScreen() {
               key={option}
               checked={option === skin}
               label={t(`skin.${option}`)}
-              onSelect={() => setSkin(option)}
+              onSelect={() => saveProfile({ skinId: option })}
             >
               <span className="flex -space-x-3">
                 <PlayingCard code="As" skin={option} className="w-10" />
@@ -314,7 +355,7 @@ export function ProfileScreen() {
               key={option}
               checked={option === back}
               label={t(`back.${option}`)}
-              onSelect={() => setBack(option)}
+              onSelect={() => saveProfile({ backId: option })}
             >
               <CardBack variant={option} decorative className="w-10" />
               {t(`back.${option}`)}

@@ -31,6 +31,7 @@ function seat(i: number, overrides: Partial<SeatView> = {}): SeatView {
 
 export function pokerTable(seatCount: 2 | 3 | 4 | 5 | 6): TableView {
   return {
+    handId: 1,
     game: "poker",
     phase: "flop",
     seats: Array.from({ length: seatCount }, (_, i) => seat(i)),
@@ -57,6 +58,7 @@ export const spectatorTable: TableView = {
 };
 
 export const blackjackTable: TableView = {
+  handId: 1,
   game: "blackjack",
   phase: "players",
   seats: [

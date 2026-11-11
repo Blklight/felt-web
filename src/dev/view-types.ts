@@ -92,6 +92,7 @@ export type SeatView = {
 };
 
 export type TableView = {
+  handId: number;
   game: "blackjack" | "poker";
   phase: string;
   seats: SeatView[];

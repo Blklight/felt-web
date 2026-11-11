@@ -2,25 +2,13 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { ScriptedTable } from "@/components/screens/scripted-table";
+import { LiveTable } from "@/components/screens/live-table";
 import { useT } from "@/i18n/use-t";
 import { isValidRoomCode } from "@/lib/room-code";
-import { useRecentTablesStore } from "@/store/useRecentTablesStore";
 
-export function TableScreen({
-  code,
-  game = "poker",
-}: {
-  code: string | null;
-  game?: "poker" | "blackjack";
-}) {
+export function TableScreen({ code }: { code: string | null }) {
   const t = useT();
   const valid = code !== null && isValidRoomCode(code);
-  const visit = useRecentTablesStore((state) => state.visit);
-  useEffect(() => {
-    if (valid && code) visit(code, game);
-  }, [valid, code, game, visit]);
 
   if (!code || !valid) {
     return (
@@ -38,13 +26,11 @@ export function TableScreen({
       <h1 className="tabular-nums text-muted-foreground text-sm">
         {t("table.room", { code })}
       </h1>
-      <ScriptedTable game={game} />
+      <LiveTable code={code} />
     </div>
   );
 }
 
 export function TableRoute() {
-  const params = useSearchParams();
-  const game = params.get("game") === "blackjack" ? "blackjack" : "poker";
-  return <TableScreen code={params.get("code")} game={game} />;
+  return <TableScreen code={useSearchParams().get("code")} />;
 }

@@ -6,7 +6,6 @@ import { Board } from "@/components/table/board";
 import { dealSchedule } from "@/components/table/deal-schedule";
 import { Table } from "@/components/table/table";
 import { blackjackTable, pokerTable } from "@/dev/fixtures";
-import { HAND_STEPS, useHandScript } from "@/dev/use-hand-script";
 import type { TableView } from "@/dev/view-types";
 import { useLanguageStore } from "@/store/useLanguageStore";
 
@@ -164,42 +163,5 @@ describe("Table chip flights", () => {
     expect(container.querySelectorAll("[data-flight='payout']")).toHaveLength(
       1,
     );
-  });
-});
-
-describe("useHandScript", () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
-
-  function Probe() {
-    const { view, hand } = useHandScript();
-    return (
-      <p>
-        {hand}|{view.phase}|{view.board.length}|
-        {view.pots.reduce((a, b) => a + b, 0)}
-      </p>
-    );
-  }
-
-  it("plays a whole hand in poker order and starts the next one", () => {
-    render(<Probe />);
-    expect(screen.getByText(/^0\|preflop\|0\|/)).toBeInTheDocument();
-    const phases: string[] = [];
-    for (const step of HAND_STEPS) {
-      act(() => vi.advanceTimersByTime(step.wait * 1000));
-      phases.push(screen.getByText(/\|/).textContent ?? "");
-    }
-    const order = phases
-      .map((p) => p.split("|")[1])
-      .filter((p, i, all) => i === 0 || p !== all[i - 1]);
-    expect(order).toEqual([
-      "preflop",
-      "flop",
-      "turn",
-      "river",
-      "showdown",
-      "preflop",
-    ]);
-    expect(phases.at(-1)?.startsWith("1|preflop|0|")).toBe(true);
   });
 });
