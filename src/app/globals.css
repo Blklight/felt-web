@@ -397,6 +397,24 @@
     @apply border-border outline-ring/50;
   }
 
+  /* Tailwind v4 resets buttons to cursor: default. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="slider"],
+  summary,
+  label:has(input:not(:disabled)),
+  [role="switch"] ~ label,
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+
   html {
     scroll-behavior: smooth;
     scrollbar-width: none;
