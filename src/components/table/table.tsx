@@ -21,6 +21,7 @@ import { Timer } from "@/components/table/timer";
 import type { CardCode, TableView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
+import { playSound, type Sound } from "@/lib/sounds";
 import { cn } from "@/lib/utils";
 import { useCardLook } from "@/store/useCardSkinStore";
 
@@ -38,11 +39,16 @@ type Flight = {
   to: Point;
 };
 
+// From sm up the width also follows the height of the nearest size container (or the viewport), minus --table-offset.
 const BOX: Record<TableShape, string> = {
-  chamfer: "aspect-square max-w-xl sm:aspect-[4/3]",
-  round: "aspect-[4/5] max-w-3xl sm:aspect-[16/10]",
-  stadium: "aspect-[3/4] max-w-4xl sm:aspect-[16/9]",
-  halfmoon: "aspect-[4/5] max-w-3xl sm:aspect-[28/15]",
+  chamfer:
+    "aspect-square max-w-xl sm:aspect-[4/3] sm:max-w-[calc((100cqh-var(--table-offset,6rem))*4/3)]",
+  round:
+    "aspect-[4/5] max-w-3xl sm:aspect-[16/10] sm:max-w-[calc((100cqh-var(--table-offset,6rem))*16/10)]",
+  stadium:
+    "aspect-[3/4] max-w-4xl sm:aspect-[16/9] sm:max-w-[calc((100cqh-var(--table-offset,6rem))*16/9)]",
+  halfmoon:
+    "aspect-[4/5] max-w-3xl sm:aspect-[28/15] sm:max-w-[calc((100cqh-var(--table-offset,6rem))*28/15)]",
 };
 
 const DEAL_STEP = 0.16;
@@ -78,6 +84,29 @@ function layout(view: TableView) {
     return toward(slot, focus, shape === "halfmoon" ? 0.5 : 0.32);
   };
   return { shape, slotOf, betOf };
+}
+
+export function soundsBetween(before: TableView, now: TableView): Sound[] {
+  const sounds: Sound[] = [];
+  if (
+    before.seats.length === now.seats.length &&
+    now.seats.some((s, i) => s.bet > before.seats[i].bet)
+  )
+    sounds.push("bet");
+  const acting = (v: TableView) => v.you.legalActions.length > 0;
+  if (!acting(before) && acting(now)) sounds.push("turn");
+  const hurry = (v: TableView) =>
+    acting(v) && v.secondsLeft !== null && v.secondsLeft <= 5;
+  if (!hurry(before) && hurry(now)) sounds.push("hurry");
+  const outcome = (v: TableView) =>
+    v.seats.find((s) => s.seat === v.you.seat)?.outcome?.kind;
+  const kind = outcome(now);
+  if (kind && kind !== "push" && !outcome(before))
+    sounds.push(kind === "win" || kind === "blackjack" ? "win" : "lose");
+  const won = (v: TableView) =>
+    v.result?.winners.some((w) => w.seat === v.you.seat) ?? false;
+  if (!won(before) && won(now)) sounds.push("win");
+  return sounds;
 }
 
 function flightsBetween(
@@ -164,6 +193,7 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
   const [shuffling, setShuffling] = useState(animateDeal);
   useEffect(() => {
     if (!shuffling) return;
+    playSound("shuffle");
     const id = setTimeout(() => setShuffling(false), SHUFFLE_SECONDS * 1000);
     return () => clearTimeout(id);
   }, [shuffling]);
@@ -176,6 +206,8 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
     previous.current = view;
     if (before === view) return;
     const next = flightsBetween(before, view, () => ++ids.current);
+    const kinds = new Set(next.map((f) => f.kind));
+    for (const kind of kinds) playSound(kind);
     if (next.length > 0) setFlights((current) => [...current, ...next]);
   }, [view]);
 

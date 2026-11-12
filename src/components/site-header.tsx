@@ -3,6 +3,7 @@
 import { MoonIcon, SunIcon } from "lucide-react";
 import Link from "next/link";
 import { LanguageSwitch } from "@/components/language-switch";
+import { SoundToggle } from "@/components/sound-toggle";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useT } from "@/i18n/use-t";
 
@@ -24,6 +25,7 @@ export function SiteHeader() {
         <Link href="/profile">{t("nav.profile")}</Link>
         <Link href="/about">{t("nav.about")}</Link>
         <LanguageSwitch />
+        <SoundToggle />
         <AnimatedThemeToggler className="size-8 border border-border px-0 [&_svg]:size-4">
           <SunIcon className="dark:hidden" />
           <MoonIcon className="hidden dark:block" />

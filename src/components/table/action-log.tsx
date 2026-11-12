@@ -1,8 +1,18 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { LogEntry, SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
+import { cn } from "@/lib/utils";
 
 const VISIBLE = 8;
 
@@ -19,11 +29,21 @@ export function useLogText() {
 
 type Props = { entries: LogEntry[]; seats: SeatView[]; you?: number | null };
 
-export function ActionLog({ entries, seats, you = null }: Props) {
+export function ActionLog({
+  entries,
+  seats,
+  you = null,
+  className,
+}: Props & { className?: string }) {
   const t = useT();
   const text = useLogText();
   return (
-    <div className="w-full max-w-xl rounded-lg border border-border p-3">
+    <div
+      className={cn(
+        "w-full max-w-xl rounded-lg border border-border p-3",
+        className,
+      )}
+    >
       <p className="mb-1 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
         {t("log.title")}
       </p>
@@ -37,5 +57,29 @@ export function ActionLog({ entries, seats, you = null }: Props) {
         ))}
       </ol>
     </div>
+  );
+}
+
+export function ActionLogSheet(props: Props & { className?: string }) {
+  const t = useT();
+  return (
+    <Sheet>
+      <SheetTrigger
+        render={
+          <Button variant="outline" size="sm" className={props.className} />
+        }
+      >
+        {t("log.title")}
+      </SheetTrigger>
+      <SheetContent side="right" className="overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>{t("log.title")}</SheetTitle>
+          <SheetDescription className="sr-only">
+            {t("log.title")}
+          </SheetDescription>
+        </SheetHeader>
+        <ActionLog {...props} className="border-0 pt-0" />
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -12,6 +12,7 @@ import { CardBack } from "@/components/cards/card-back";
 import { PlayingCard } from "@/components/cards/playing-card";
 import type { CardBackVariant, CardSkin } from "@/components/cards/skins";
 import type { CardCode } from "@/dev/view-types";
+import { playSound } from "@/lib/sounds";
 import { cn } from "@/lib/utils";
 
 export const FLIGHT_SECONDS = 0.45;
@@ -53,6 +54,7 @@ export function TableCard({
     const scale = a.width > 0 ? b.width / a.width : 1;
     card.style.transform = `translateX(${x}px) translateY(${y}px) scale(${scale})`;
     card.style.zIndex = "40";
+    const whoosh = setTimeout(() => playSound("deal"), dealDelay * 1000);
     const flight = animate(
       card,
       { x: [x, 0], y: [y, 0], scale: [scale, 1] },
@@ -62,6 +64,7 @@ export function TableCard({
       card.style.zIndex = "";
     });
     return () => {
+      clearTimeout(whoosh);
       flight.stop();
       card.style.transform = "";
       card.style.zIndex = "";
@@ -79,6 +82,11 @@ export function TableCard({
   }, []);
 
   const faceUp = code !== "??" && landed;
+  const wasFaceUp = useRef(faceUp);
+  useEffect(() => {
+    if (faceUp && !wasFaceUp.current) playSound("flip");
+    wasFaceUp.current = faceUp;
+  }, [faceUp]);
 
   return (
     <div
