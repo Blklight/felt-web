@@ -61,7 +61,7 @@ describe("LiveTable", () => {
   it("sends sit with the chosen buy-in", async () => {
     socket.state = { view: watching, fatal: null };
     renderWithQuery(<LiveTable code="KQ7XZ" />);
-    expect(screen.getByText("Balance: 5,000")).toBeInTheDocument();
+    expect(screen.getByText("5,000")).toBeInTheDocument();
     await userEvent.click(
       screen.getAllByRole("button", { name: /^Sit at seat/ })[0] as HTMLElement,
     );

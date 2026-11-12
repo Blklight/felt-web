@@ -1,7 +1,7 @@
 export const LayoutBase = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="w-full min-h-screen lg:p-2.25 flex flex-col relative rounded-b-lg main-background bg-light book:bg-sepia dark:bg-dark">
+      <div className="w-full min-h-screen lg:p-2.25 flex flex-col relative rounded-b-lg main-background background-texture bg-light book:bg-sepia dark:bg-dark">
         <main className="w-full relative flex flex-col grow">{children} </main>
       </div>
       <div
