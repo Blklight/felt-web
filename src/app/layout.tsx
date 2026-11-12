@@ -61,6 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <ThemeProvider
           attribute="class"
+          themes={["light", "dark", "book"]}
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange

@@ -71,8 +71,11 @@ export function Seat({
         dealFrom={dealFrom}
         dealDelays={dealDelays}
         highlight={highlight}
-        className="relative z-10 -mb-3 -space-x-3"
-        cardClassName="w-9 sm:w-11"
+        className={cn(
+          "relative z-10 -mb-3 -space-x-3",
+          isYou && "sm:-space-x-5",
+        )}
+        cardClassName={isYou ? "w-9 sm:w-16 lg:w-20" : "w-9 sm:w-11 lg:w-14"}
       />
       {seat.total !== undefined && (
         <span
