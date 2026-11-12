@@ -212,7 +212,7 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
   }, [view]);
 
   return (
-    <div className="mx-auto w-full px-10 py-14 sm:px-8 sm:py-12">
+    <div className="mx-auto w-full px-8 py-10 sm:px-6 sm:py-8">
       <div
         data-shape={shape}
         className={cn("table relative mx-auto w-full", BOX[shape])}

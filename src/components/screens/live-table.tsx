@@ -83,7 +83,7 @@ export function LiveTable({ code }: { code: string }) {
 
   // Below xl both columns use display:contents: their children share one column, and order-first lifts the header.
   return (
-    <div className="flex w-full flex-col items-center gap-3 [--table-offset:22rem] xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-6 xl:[--table-offset:9rem]">
+    <div className="flex w-full flex-col items-center gap-3 [--table-offset:20rem] xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-6 xl:[--table-offset:7rem]">
       <div className="contents xl:flex xl:h-[calc(100dvh-7rem)] xl:min-w-0 xl:flex-col xl:items-center xl:justify-center xl:gap-3 xl:[container-type:size]">
         <ConnectionBanner onRetry={retry} />
         {!view ? (
