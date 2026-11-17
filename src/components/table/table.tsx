@@ -275,7 +275,11 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
                     {t("dealer.total", { total: view.dealerTotal })}
                   </span>
                 )}
-                <Timer secondsLeft={view.secondsLeft} />
+                <Timer
+                  secondsLeft={view.secondsLeft}
+                  secondsTotal={view.secondsTotal}
+                  resetKey={view}
+                />
               </div>
             </div>
           )}
@@ -284,7 +288,11 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
               {announcement}
             </output>
           ) : view.phase === "waiting" || view.game === "blackjack" ? null : (
-            <Timer secondsLeft={view.secondsLeft} />
+            <Timer
+              secondsLeft={view.secondsLeft}
+              secondsTotal={view.secondsTotal}
+              resetKey={view}
+            />
           )}
         </div>
         {view.seats.map((seat, i) => {
@@ -315,6 +323,11 @@ export function Table({ view, animateDeal = false, onSit }: Props) {
               highlight={highlight}
               winner={winners.some((w) => w.seat === seat.seat)}
               onSit={view.you.seat === null ? onSit : undefined}
+              hand={
+                view.you.seat === seat.seat && view.game === "poker"
+                  ? view.you.hand
+                  : undefined
+              }
             />
           </div>
         ))}

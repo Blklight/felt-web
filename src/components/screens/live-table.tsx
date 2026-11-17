@@ -10,7 +10,6 @@ import {
   ConnectionBanner,
   useOnlineWatcher,
 } from "@/components/table/connection-banner";
-import { HandBadge } from "@/components/table/hand-badge";
 import { HandRankings } from "@/components/table/hand-rankings";
 import { LeaveButton } from "@/components/table/leave-button";
 import { soundsBetween, Table } from "@/components/table/table";
@@ -72,7 +71,12 @@ export function LiveTable({ code }: { code: string }) {
     );
   }
 
-  const stack = view?.seats.find((s) => s.seat === seat)?.stack ?? 0;
+  const mine = view?.seats.find((s) => s.seat === seat);
+  const stack = mine?.stack ?? 0;
+  const inHand =
+    !!mine &&
+    !["waiting", "showdown", "results"].includes(view?.phase ?? "") &&
+    (mine.bet > 0 || mine.cards.length > 0);
   const blackjack = view?.game === "blackjack";
 
   const log = view && {
@@ -119,7 +123,12 @@ export function LiveTable({ code }: { code: string }) {
               {t("table.room", { code })}
             </h1>
             {view && seat !== null && (
-              <LeaveButton stack={stack} onLeave={() => send({ t: "stand" })} />
+              <LeaveButton
+                stack={stack}
+                inHand={inHand}
+                leaving={mine?.leaving}
+                onLeave={() => send({ t: "stand" })}
+              />
             )}
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -137,7 +146,6 @@ export function LiveTable({ code }: { code: string }) {
           )}
           {view && seat !== null && (
             <div className="flex flex-wrap items-center gap-2">
-              {!blackjack && <HandBadge hand={view.you.hand} />}
               {!blackjack && <HandRankings current={view.you.hand?.rank} />}
               {log && <ActionLogSheet {...log} className="xl:hidden" />}
             </div>

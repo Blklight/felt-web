@@ -156,4 +156,11 @@ describe("LeaveButton", () => {
       screen.getByText("You will leave when this hand ends."),
     ).toBeInTheDocument();
   });
+
+  it("shows a pending leave without offering to leave again", () => {
+    render(<LeaveButton stack={1850} leaving onLeave={vi.fn()} />);
+    expect(
+      screen.getByRole("button", { name: "Leaving after this hand" }),
+    ).toBeDisabled();
+  });
 });
