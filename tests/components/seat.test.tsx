@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Pot } from "@/components/table/pot";
 import { Seat } from "@/components/table/seat";
 import { Timer } from "@/components/table/timer";
@@ -84,6 +84,15 @@ describe("Timer", () => {
     expect(screen.getByRole("timer").getAttribute("data-urgent")).toBe(
       expected,
     );
+  });
+
+  it("counts down between server messages", () => {
+    vi.useFakeTimers();
+    act(() => useLanguageStore.setState({ language: "en" }));
+    render(<Timer secondsLeft={10} />);
+    act(() => vi.advanceTimersByTime(3000));
+    expect(screen.getByRole("timer")).toHaveTextContent("7s left");
+    vi.useRealTimers();
   });
 
   it("renders nothing without a deadline", () => {

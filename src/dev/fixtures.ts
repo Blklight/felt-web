@@ -47,6 +47,7 @@ export function pokerTable(seatCount: 2 | 3 | 4 | 5 | 6): TableView {
         { type: "call", amount: 50 },
         { type: "raise", min: 100, max: 1000 },
       ],
+      hand: { rank: "high-card", cards: ["As", "Kd", "Td", "7h", "2c"] },
     },
   };
 }

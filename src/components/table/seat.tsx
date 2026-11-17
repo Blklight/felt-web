@@ -3,7 +3,8 @@
 import type { RefObject } from "react";
 import { Hand } from "@/components/cards/hand";
 import { PlayerAvatar } from "@/components/player-avatar";
-import type { CardCode, SeatView } from "@/dev/view-types";
+import { HandBadge } from "@/components/table/hand-badge";
+import type { CardCode, HandInfo, SeatView } from "@/dev/view-types";
 import { useFormatNumber } from "@/i18n/use-format-number";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ type Props = {
   winner?: boolean;
   highlight?: (code: CardCode) => "win" | "dim" | undefined;
   onSit?: (seat: number) => void;
+  hand?: HandInfo;
 };
 
 export function Seat({
@@ -27,6 +29,7 @@ export function Seat({
   winner = false,
   highlight,
   onSit,
+  hand,
 }: Props) {
   const t = useT();
   const format = useFormatNumber();
@@ -125,6 +128,10 @@ export function Seat({
             {t("seat.allIn")}
           </p>
         )}
+        <HandBadge
+          hand={hand}
+          className="mt-1 border-bone/20 border-t pt-0.5"
+        />
       </div>
       {seat.isDealer && (
         <span

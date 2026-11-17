@@ -100,6 +100,7 @@ const en = {
   "leave.title": "Leave the table?",
   "leave.desc": "Your {stack} chips go back to your balance.",
   "leave.duringHand": "You will leave when this hand ends.",
+  "leave.pending": "Leaving after this hand",
   "leave.confirm": "Leave",
   "table.spectating": "You are watching. Pick a free seat to play.",
   "table.waiting": "Waiting for players",
@@ -323,6 +324,7 @@ const ptBr: Record<MessageKey, string> = {
   "leave.title": "Sair da mesa?",
   "leave.desc": "Suas {stack} fichas voltam para o saldo.",
   "leave.duringHand": "Você sai quando esta mão terminar.",
+  "leave.pending": "Saindo ao fim da mão",
   "leave.confirm": "Sair",
   "table.spectating":
     "Você está assistindo. Escolha um lugar livre para jogar.",

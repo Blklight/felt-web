@@ -168,6 +168,7 @@ export type SeatView = {
   total?: number;
   outcome?: Outcome;
   isTurn: boolean;
+  leaving?: true; // asked to stand; leaves when the hand ends
 };
 export type TableView = {
   handId: number;
@@ -190,6 +191,7 @@ export type TableView = {
   boardBackId: CardBackVariant;
   pots: number[];
   secondsLeft: number | null;
+  secondsTotal?: number; // full length of the running timer
   you: { seat: number | null; legalActions: LegalAction[]; hand?: HandInfo };
   result?: { winners: Winner[] };
   buyIn?: { min: number; max: number };
